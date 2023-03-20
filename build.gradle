@@ -19,9 +19,33 @@ repositories {
 }
 
 dependencies {
+
+
+	//oauth
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	//valid
+	implementation 'org.springframework.boot:spring-boot-starter-validation:2.7.9'
+
+	//jwt
+	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+	//jpa
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	//mysql
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	//mariaDB
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+	//web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	//lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
