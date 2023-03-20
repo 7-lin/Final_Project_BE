@@ -202,7 +202,7 @@ gradle-app.setting
 *.hprof
 
 #application.yml
-src/main/resources/
+src/main/resources/application.yml
 
 #config
 src/main/java/com/fc/final7/global/config
