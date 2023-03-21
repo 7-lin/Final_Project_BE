@@ -21,12 +21,13 @@ public class Category {
     @Column(name = "category_id")
     private Long id;
 
-    @OneToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
-    // TODO: 2023-03-21 카테고리 타입을 ENUM 으로 할지 말지 고민
+    @Column(name = "type", columnDefinition = "VARCHAR(40)")
+    private String type;
 
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "VARCHAR(60)")
     private String content;
 }

@@ -1,10 +1,10 @@
 package com.fc.final7.domain.product.entity;
 
+import com.fc.final7.global.entity.ContentType;
 import lombok.*;
 
 import javax.persistence.*;
 
-import static javax.persistence.CascadeType.ALL;
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -23,18 +23,17 @@ public class ProductContent {
     @Column(name = "product_content_id")
     private Long id;
 
-    @OneToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
 
     @Column(name = "priority")
-    @GeneratedValue(strategy = IDENTITY)
     private Long priority;
 
-    @Column(name = "type")
+    @Column(name = "type", columnDefinition = "VARCHAR(20)")
     @Enumerated(STRING)
     private ContentType contentType;
 
-    @Column(name = "content")
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
 }
