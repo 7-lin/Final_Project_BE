@@ -208,4 +208,7 @@ src/main/resources/application.yml
 #config
 src/main/java/com/fc/final7/global/config
 
+# query dsl
+src/main/generated
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,windows,intellij+all,gradle,java
