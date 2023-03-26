@@ -12,10 +12,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DuplicateKeyException.class)
-    protected ResponseEntity<ErrorResponse> handleDuplicateKeyException(DuplicateKeyException e){
-        log.error("DuplicateKeyException", e);
+    @ExceptionHandler(DuplicateEmailException.class)
+    protected ResponseEntity<ErrorResponse> handleDuplicateEmailException(DuplicateEmailException e){
+        log.error(e.getMessage(), e.getStackTrace());
         ErrorResponse response = ErrorResponse.of(ErrorCode.DUPLICATE_ID);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(TokenExpirationException.class)
+    protected ResponseEntity<ErrorResponse> handleTokenExpirationException(TokenExpirationException e){
+        log.error(e.getMessage(), e.getStackTrace());
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.TOKEN_NOT_EXISTS);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 }
