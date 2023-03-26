@@ -203,6 +203,7 @@ gradle-app.setting
 
 #application.yml
 src/main/resources/application.yml
+*.yml
 
 #config
 src/main/java/com/fc/final7/global/config
