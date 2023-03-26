@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static com.fc.final7.domain.member.enums.IsMember.YES;
+import static com.fc.final7.domain.member.service.MemberService.validationEmail;
+import static com.fc.final7.domain.member.service.MemberService.validationPassword;
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -103,19 +105,6 @@ public class Member extends Auditing {
                 .birth(memberDto.getBirth())
                 .phone(memberDto.getPhone())
                 .build();
-    }
-
-
-    public static final Pattern isEmail = Pattern.compile("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$");
-
-    public static final Pattern isPassword = Pattern.compile("^.{8,16}$");
-
-    public static boolean validationEmail(SignUpRequestDto dto) {
-        return isEmail.matcher(dto.getEmail()).matches();
-    }
-
-    public static boolean validationPassword(SignUpRequestDto dto) {
-        return isPassword.matcher(dto.getPassword()).matches();
     }
 
 }
