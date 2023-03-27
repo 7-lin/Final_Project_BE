@@ -2,6 +2,7 @@ package com.fc.final7.domain.reservation.entity;
 
 import com.fc.final7.domain.member.entity.Member;
 import com.fc.final7.domain.product.entity.Product;
+import com.fc.final7.domain.product.entity.ProductOption;
 import com.fc.final7.domain.product.entity.ProductPeriod;
 import com.fc.final7.global.entity.Auditing;
 import lombok.*;
@@ -34,6 +35,10 @@ public class Reservation extends Auditing {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "product_option_id")
+    private ProductOption productOption;
+
     @Column(name = "status", columnDefinition = "VARCHAR(20)")
     @Enumerated(STRING)
     private Status status;
@@ -49,4 +54,10 @@ public class Reservation extends Auditing {
 
     @Column(name = "notice", columnDefinition = "TINYINT")
     private Boolean notice;
+
+    @Column(name = "price")
+    private Long price;
+
+    @Column(name = "people")
+    private Integer people;
 }
