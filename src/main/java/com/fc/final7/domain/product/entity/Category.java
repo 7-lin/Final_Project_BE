@@ -1,6 +1,9 @@
 package com.fc.final7.domain.product.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
@@ -25,9 +28,31 @@ public class Category {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(name = "type", columnDefinition = "VARCHAR(40)")
-    private String type;
+    //대분류
+    @Column(name = "main_category", columnDefinition = "VARCHAR(40)")
+    private String mainCategory;
 
-    @Column(name = "content", columnDefinition = "VARCHAR(60)")
-    private String content;
+    //중분류
+    @Column(name = "middle_category", columnDefinition = "VARCHAR(40)")
+    private String middleCategory;
+
+    @Column(name = "subdivision", columnDefinition = "VARCHAR(40)")
+    private String subdivision;
+
+
+
+    //연관관계 편의 메서드
+    public Category (String mainCategory, String middleCategory, String subdivision, Product product) {
+        this.mainCategory = mainCategory;
+        this.middleCategory = middleCategory;
+        this.subdivision = subdivision;
+        if(product != null) {
+            relation(product);
+        }
+    }
+
+    public void relation(Product product) {
+        this.product = product;
+        product.getCategories().add(this);
+    }
 }
