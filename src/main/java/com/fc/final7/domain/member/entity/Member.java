@@ -38,9 +38,11 @@ public class Member extends Auditing {
     @Column(name = "member_id")
     private Long id;
 
+    @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<WishList> wishLists = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<Reservation> reservations = new ArrayList<>();
 

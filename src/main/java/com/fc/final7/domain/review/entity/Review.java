@@ -33,9 +33,11 @@ public class Review extends Auditing {
     @JoinColumn(name = "product_id")
     private Product product;
 
+    @Builder.Default
     @OneToMany(mappedBy = "review")
     private List<ReviewContent> reviewContents = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "review")
     private List<Comment> comments = new ArrayList<>();
 
