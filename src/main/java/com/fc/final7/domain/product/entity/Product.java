@@ -12,7 +12,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.fc.final7.domain.product.entity.SalesStatus.OPEN;
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -30,20 +29,29 @@ public class Product extends Auditing {
     @Column(name = "product_id")
     private Long id;
 
+    @Builder.Default
     @OneToMany(mappedBy = "product")
     private List<WishList> wishLists = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "product")
     private List<Category> categories = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "product")
     private List<ProductPeriod> productPeriods = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "product")
     private List<ProductContent> productContents = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "product")
     private List<Review> reviews = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "product")
+    private List<ProductOption> options = new ArrayList<>();
 
     @Column(name = "thumbnail", columnDefinition = "TEXT")
     private String thumbnail;
@@ -66,9 +74,11 @@ public class Product extends Auditing {
     @Column(name = "price")
     private Long price;
 
-    @Builder.Default
+    @Column(name = "term")
+    private Integer term;
+
     @Column(name = "status", columnDefinition = "VARCHAR(10) DEFAULT 'OPEN'")
     @Enumerated(STRING)
-    private SalesStatus salesStatus = OPEN;
+    private SalesStatus salesStatus;
 
 }
