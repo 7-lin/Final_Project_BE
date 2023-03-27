@@ -5,7 +5,6 @@ import com.fc.final7.domain.product.dto.ProductResponseDTO;
 import com.fc.final7.domain.product.dto.SearchConditionListDTO;
 import com.fc.final7.domain.product.entity.Product;
 import com.fc.final7.domain.product.repository.CategoryRepository;
-import com.fc.final7.domain.product.repository.ProductRepository;
 import com.fc.final7.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ProductServiceImpl {
+public class ProductServiceImpl implements ProductService{
 
     private final CategoryRepository categoryRepository;
 
