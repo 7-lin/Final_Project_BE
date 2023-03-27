@@ -17,11 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-<<<<<<< HEAD
 public class ProductServiceImpl {
-=======
-public class ProductServiceImpl implements ProductService {
->>>>>>> a1d1d21 (feat: productservice 인터페이스 및 구현체 개발)
 
     private final CategoryRepository categoryRepository;
 

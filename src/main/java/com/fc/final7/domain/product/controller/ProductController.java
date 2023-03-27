@@ -3,7 +3,7 @@ package com.fc.final7.domain.product.controller;
 import com.fc.final7.domain.product.dto.ProductPagingDTO;
 import com.fc.final7.domain.product.dto.SearchConditionListDTO;
 import com.fc.final7.domain.product.service.ProductService;
-import com.fc.final7.global.response.GlobalSuccessDTO;
+import com.fc.final7.global.response.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,9 +18,9 @@ public class ProductController {
 
 
     @PostMapping("/products")
-    private GlobalSuccessDTO<ProductPagingDTO> test(@RequestBody SearchConditionListDTO searchConditionDTOS) {
+    private BaseResponse<ProductPagingDTO> test(@RequestBody SearchConditionListDTO searchConditionDTOS) {
         PageRequest pageRequest = PageRequest.of(searchConditionDTOS.getPage(), 12);
         ProductPagingDTO productPagingDTO = productService.groupByCategory(searchConditionDTOS, pageRequest);
-        return new GlobalSuccessDTO<>(productPagingDTO.getProducts().size(), "성공", productPagingDTO);
+        return BaseResponse.of(productPagingDTO.getProducts().size(), "성공", productPagingDTO);
     }
 }
