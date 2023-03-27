@@ -36,4 +36,18 @@ public class ProductContent {
 
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
+
+    //연관관계 메서드
+    public ProductContent(Long priority, ContentType contentType, String content, Product product) {
+        this.priority = priority;
+        this.contentType = contentType;
+        this.content = content;
+        if(product != null) {
+            relation(product);
+        }
+    }
+    public void relation(Product product) {
+        this.product = product;
+        product.getProductContents().add(this);
+    }
 }

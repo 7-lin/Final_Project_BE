@@ -2,14 +2,17 @@ package com.fc.final7.domain.product.entity;
 
 import com.fc.final7.domain.reservation.entity.Reservation;
 import com.fc.final7.global.entity.Auditing;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
@@ -27,6 +30,7 @@ public class ProductPeriod extends Auditing {
     @Column(name = "product_period_id")
     private Long id;
 
+    @Builder.Default
     @OneToMany(mappedBy = "productPeriod")
     private List<Reservation> reservations = new ArrayList<>();
 
@@ -39,4 +43,24 @@ public class ProductPeriod extends Auditing {
 
     @Column(name = "end_date", columnDefinition = "DATE")
     private Date endDate;
+
+    @Column(name = "status", columnDefinition = "VARCHAR(10) DEFAULT 'OPEN'")
+    @Enumerated(STRING)
+    private SalesStatus salesStatus;
+
+
+    //연관관계 메서드
+    public ProductPeriod(Date startDate, Date endDate, SalesStatus salesStatus, Product product) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.salesStatus = salesStatus;
+        if(product != null) {
+            relation(product);
+        }
+    }
+
+    public void relation(Product product) {
+        this.product = product;
+        product.getProductPeriods().add(this);
+    }
 }
