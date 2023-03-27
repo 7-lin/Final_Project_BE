@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @ToString
 @Builder
-public class ProductDTO {
+public class ProductResponseDTO {
 
     private Long productId;
     private String thumbnail;
@@ -17,7 +17,7 @@ public class ProductDTO {
     private String briefExplanation;
     private Integer period;
 
-    public ProductDTO(Product product) {
+    public ProductResponseDTO(Product product) {
         productId = product.getId();
         thumbnail = product.getThumbnail();
         productName = product.getTitle();
