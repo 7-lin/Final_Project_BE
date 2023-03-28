@@ -7,6 +7,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,12 @@ public class Review extends Auditing {
     @Builder.Default
     @OneToMany(mappedBy = "review")
     private List<Comment> comments = new ArrayList<>();
+
+    @Column(name = "title", columnDefinition = "VARCHAR(40)")
+    private String title;
+
+    @Column(name = "grade", columnDefinition = "DECIMAL(1,1)")
+    private BigDecimal grade;
 
     @Column(name = "thumbnail", columnDefinition = "TEXT")
     private String thumbnail;
