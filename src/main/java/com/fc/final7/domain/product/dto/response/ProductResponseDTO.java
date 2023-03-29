@@ -1,4 +1,4 @@
-package com.fc.final7.domain.product.dto;
+package com.fc.final7.domain.product.dto.response;
 
 import com.fc.final7.domain.product.entity.Product;
 import lombok.*;

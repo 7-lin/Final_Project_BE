@@ -1,7 +1,7 @@
 package com.fc.final7.domain.product.controller;
 
-import com.fc.final7.domain.product.dto.ProductPagingDTO;
-import com.fc.final7.domain.product.dto.SearchConditionListDTO;
+import com.fc.final7.domain.product.dto.response.ProductPagingDTO;
+import com.fc.final7.domain.product.dto.request.SearchConditionListDTO;
 import com.fc.final7.domain.product.service.ProductService;
 import com.fc.final7.global.response.BaseResponse;
 import lombok.RequiredArgsConstructor;

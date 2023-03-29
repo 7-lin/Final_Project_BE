@@ -1,8 +1,8 @@
 package com.fc.final7.domain.product.repository.query;
 
 
-import com.fc.final7.domain.product.dto.SearchConditionDTO;
-import com.fc.final7.domain.product.dto.SearchConditionListDTO;
+import com.fc.final7.domain.product.dto.request.SearchConditionDTO;
+import com.fc.final7.domain.product.dto.request.SearchConditionListDTO;
 import com.fc.final7.domain.product.entity.Product;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPAExpressions;

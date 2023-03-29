@@ -1,10 +1,10 @@
 package com.fc.final7.domain.product.service.impl;
 
-import com.fc.final7.domain.product.dto.ProductPagingDTO;
-import com.fc.final7.domain.product.dto.ProductResponseDTO;
-import com.fc.final7.domain.product.dto.SearchConditionListDTO;
+import com.fc.final7.domain.product.dto.response.ProductPagingDTO;
+import com.fc.final7.domain.product.dto.response.ProductResponseDTO;
+import com.fc.final7.domain.product.dto.request.SearchConditionListDTO;
 import com.fc.final7.domain.product.entity.Product;
-import com.fc.final7.domain.product.repository.CategoryRepository;
+import com.fc.final7.domain.product.repository.datajpa.CategoryRepository;
 import com.fc.final7.domain.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -1,5 +1,6 @@
-package com.fc.final7.domain.product.dto;
+package com.fc.final7.domain.product.dto.request;
 
+import com.fc.final7.domain.product.dto.request.SearchConditionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
