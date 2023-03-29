@@ -1,11 +1,11 @@
 package com.fc.final7.domain.product.service;
 
 import com.fc.final7.domain.product.entity.*;
-import com.fc.final7.domain.product.repository.CategoryRepository;
-import com.fc.final7.domain.product.repository.ProductContentRepository;
-import com.fc.final7.domain.product.repository.ProductPeriodRepository;
-import com.fc.final7.domain.product.repository.ProductRepository;
-import com.fc.final7.domain.product.repository.ProductOptionRepository;
+import com.fc.final7.domain.product.repository.datajpa.CategoryRepository;
+import com.fc.final7.domain.product.repository.datajpa.ProductContentRepository;
+import com.fc.final7.domain.product.repository.datajpa.ProductPeriodRepository;
+import com.fc.final7.domain.product.repository.datajpa.ProductRepository;
+import com.fc.final7.domain.product.repository.datajpa.ProductOptionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

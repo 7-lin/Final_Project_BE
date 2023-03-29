@@ -35,9 +35,12 @@ dependencies {
 
 	//web
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
 	//lombok
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
+	testCompileOnly 'org.projectlombok:lombok:1.18.24'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
 	//security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -51,6 +54,10 @@ dependencies {
 
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
+
+	//이미징
+	implementation 'org.imgscalr:imgscalr-lib:4.2'
+	implementation 'commons-io:commons-io:2.6'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 

@@ -1,6 +1,6 @@
 package com.fc.final7.domain.product.repository;
 
-import com.fc.final7.domain.product.dto.ProductResponseDTO;
+import com.fc.final7.domain.product.dto.response.ProductResponseDTO;
 import com.fc.final7.domain.product.entity.Product;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.junit.jupiter.api.Test;

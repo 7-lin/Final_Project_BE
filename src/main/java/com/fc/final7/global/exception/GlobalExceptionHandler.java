@@ -25,4 +25,11 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.TOKEN_NOT_EXISTS);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(NoSearchProductException.class)
+    protected ResponseEntity<ErrorResponse> handleNoSearchProductException(NoSearchProductException e) {
+        log.error(e.getMessage(), e.getStackTrace());
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.PRODUCT_NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 }
