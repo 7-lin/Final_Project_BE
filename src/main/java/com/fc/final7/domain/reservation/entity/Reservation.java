@@ -60,4 +60,7 @@ public class Reservation extends Auditing {
 
     @Column(name = "people")
     private Integer people;
+
+    @Column(name = "reservation_code", columnDefinition = "VARCHAR(40)")
+    private String reservationCode;
 }

@@ -17,7 +17,7 @@ public class ProductPeriodDTO {
 
     public ProductPeriodDTO (ProductPeriod productPeriod) {
 
-        this.startDate = new SimpleDateFormat("yyyy-MM-dd").format(productPeriod.getStartDate());
-        this.endDate = new SimpleDateFormat("yyyy-MM-dd").format(productPeriod.getEndDate());
+        this.startDate = productPeriod.getStartDate();
+        this.endDate = productPeriod.getEndDate();
     }
 }
