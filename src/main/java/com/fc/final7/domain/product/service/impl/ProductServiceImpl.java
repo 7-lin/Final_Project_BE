@@ -58,4 +58,20 @@ public class ProductServiceImpl implements ProductService{
                 .map(ReviewResponseDTO::new)
                 .collect(Collectors.toList());
     }
+
+
+    // 상품 검색 관련 api 상품명 + 상품설명에서 검색키워드가 포함 되어있으면 반환한다.
+    @Override
+    public ProductPagingDTO searchProduct(String keyWord, Pageable pageable) {
+        Page<Product> products = productRepository.searchProduct(keyWord, pageable);
+        List<ProductResponseDTO> productResponseDTOS = products.getContent().stream().map(ProductResponseDTO::new).collect(Collectors.toList());
+
+        return new ProductPagingDTO(productResponseDTOS,
+                products.getPageable().getOffset(),
+                products.getPageable().getPageNumber() + 1,
+                products.getPageable().getPageSize(),
+                products.getTotalPages(),
+                products.getTotalElements(),
+                products.getSize());
+    }
 }

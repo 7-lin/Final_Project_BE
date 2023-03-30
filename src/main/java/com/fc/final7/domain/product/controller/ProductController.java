@@ -1,7 +1,7 @@
 package com.fc.final7.domain.product.controller;
 
-import com.fc.final7.domain.product.dto.response.ProductPagingDTO;
 import com.fc.final7.domain.product.dto.request.SearchConditionListDTO;
+import com.fc.final7.domain.product.dto.response.ProductPagingDTO;
 import com.fc.final7.domain.product.dto.response.detail.ProductDetailResponseDTO;
 import com.fc.final7.domain.product.dto.response.detail.ReviewResponseDTO;
 import com.fc.final7.domain.product.service.ProductService;
@@ -42,6 +42,14 @@ public class ProductController {
 
         List<ReviewResponseDTO> reviewResponseDTOS = productService.selectProductDetailInReviews(productId, pageable);
         return BaseResponse.of(reviewResponseDTOS.size(), "성공", reviewResponseDTOS);
+    }
+
+    //상품 검색 관련 api
+    @GetMapping("/search")
+    public BaseResponse<ProductPagingDTO> searchProduct(String keyWord,
+                                                                @PageableDefault(size = 12) Pageable pageable) {
+        ProductPagingDTO pagingDTO = productService.searchProduct(keyWord, pageable);
+        return BaseResponse.of(pagingDTO.getProducts().size(), "성공", pagingDTO);
     }
 
 }
