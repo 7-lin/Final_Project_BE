@@ -70,8 +70,8 @@ class ProductServiceTest {
         String startDate2 = "2023-06-13";
         String endDate2 = "2023-06-27";
 
-        ProductPeriod productPeriod1 = new ProductPeriod(new SimpleDateFormat("yyyy-MM-dd").parse(startDate1), new SimpleDateFormat("yyyy-MM-dd").parse(endDate1), OPEN, product1);
-        ProductPeriod productPeriod2 = new ProductPeriod(new SimpleDateFormat("yyyy-MM-dd").parse(startDate2), new SimpleDateFormat("yyyy-MM-dd").parse(endDate2), OPEN, product1);
+        ProductPeriod productPeriod1 = new ProductPeriod(startDate1, endDate1, OPEN, product1);
+        ProductPeriod productPeriod2 = new ProductPeriod(startDate2, endDate2, OPEN, product1);
 
         productPeriodRepository.save(productPeriod1);
         productPeriodRepository.save(productPeriod2);
@@ -106,8 +106,8 @@ class ProductServiceTest {
         productContentRepository.save(productContent3);
         productContentRepository.save(productContent4);
 
-        ProductPeriod productPeriod3 = new ProductPeriod(new SimpleDateFormat("yyyy-MM-dd").parse(startDate1), new SimpleDateFormat("yyyy-MM-dd").parse(endDate1), OPEN, product2);
-        ProductPeriod productPeriod4 = new ProductPeriod(new SimpleDateFormat("yyyy-MM-dd").parse(startDate2), new SimpleDateFormat("yyyy-MM-dd").parse(endDate2), OPEN, product2);
+        ProductPeriod productPeriod3 = new ProductPeriod(startDate1, endDate1, OPEN, product2);
+        ProductPeriod productPeriod4 = new ProductPeriod(startDate2, endDate2, OPEN, product2);
 
         productPeriodRepository.save(productPeriod3);
         productPeriodRepository.save(productPeriod4);
@@ -142,8 +142,8 @@ class ProductServiceTest {
         productContentRepository.save(productContent5);
         productContentRepository.save(productContent6);
 
-        ProductPeriod productPeriod5 = new ProductPeriod(new SimpleDateFormat("yyyy-MM-dd").parse(startDate1), new SimpleDateFormat("yyyy-MM-dd").parse(endDate1), OPEN, product3);
-        ProductPeriod productPeriod6 = new ProductPeriod(new SimpleDateFormat("yyyy-MM-dd").parse(startDate2), new SimpleDateFormat("yyyy-MM-dd").parse(endDate2), OPEN, product3);
+        ProductPeriod productPeriod5 = new ProductPeriod(startDate1, endDate1, OPEN, product3);
+        ProductPeriod productPeriod6 = new ProductPeriod(startDate2, endDate2, OPEN, product3);
 
         productPeriodRepository.save(productPeriod5);
         productPeriodRepository.save(productPeriod6);
@@ -182,8 +182,8 @@ class ProductServiceTest {
         productContentRepository.save(productContent7);
         productContentRepository.save(productContent8);
 
-        ProductPeriod productPeriod7 = new ProductPeriod(new SimpleDateFormat("yyyy-MM-dd").parse(startDate1), new SimpleDateFormat("yyyy-MM-dd").parse(endDate1), OPEN, product4);
-        ProductPeriod productPeriod8 = new ProductPeriod(new SimpleDateFormat("yyyy-MM-dd").parse(startDate2), new SimpleDateFormat("yyyy-MM-dd").parse(endDate2), OPEN, product4);
+        ProductPeriod productPeriod7 = new ProductPeriod(startDate1, endDate1, OPEN, product4);
+        ProductPeriod productPeriod8 = new ProductPeriod(startDate2, endDate2, OPEN, product4);
 
         productPeriodRepository.save(productPeriod7);
         productPeriodRepository.save(productPeriod8);
@@ -223,8 +223,8 @@ class ProductServiceTest {
         productContentRepository.save(productContent9);
         productContentRepository.save(productContent10);
 
-        ProductPeriod productPeriod9 = new ProductPeriod(new SimpleDateFormat("yyyy-MM-dd").parse(startDate1), new SimpleDateFormat("yyyy-MM-dd").parse(endDate1), OPEN, product5);
-        ProductPeriod productPeriod10 = new ProductPeriod(new SimpleDateFormat("yyyy-MM-dd").parse(startDate2), new SimpleDateFormat("yyyy-MM-dd").parse(endDate2), OPEN, product5);
+        ProductPeriod productPeriod9 = new ProductPeriod(startDate1, endDate1, OPEN, product5);
+        ProductPeriod productPeriod10 = new ProductPeriod(startDate2, endDate2, OPEN, product5);
 
         productPeriodRepository.save(productPeriod9);
         productPeriodRepository.save(productPeriod10);
