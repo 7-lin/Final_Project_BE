@@ -38,11 +38,11 @@ public class ProductPeriod extends Auditing {
     @JoinColumn(name = "product_id")
     private Product product;
 
-    @Column(name = "start_date", columnDefinition = "DATE")
-    private Date startDate;
+    @Column(name = "start_date", columnDefinition = "VARCHAR(40)")
+    private String startDate;
 
-    @Column(name = "end_date", columnDefinition = "DATE")
-    private Date endDate;
+    @Column(name = "end_date", columnDefinition = "VARCHAR(40)")
+    private String endDate;
 
     @Column(name = "status", columnDefinition = "VARCHAR(10) DEFAULT 'OPEN'")
     @Enumerated(STRING)
@@ -50,7 +50,7 @@ public class ProductPeriod extends Auditing {
 
 
     //연관관계 메서드
-    public ProductPeriod(Date startDate, Date endDate, SalesStatus salesStatus, Product product) {
+    public ProductPeriod(String startDate, String endDate, SalesStatus salesStatus, Product product) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.salesStatus = salesStatus;
