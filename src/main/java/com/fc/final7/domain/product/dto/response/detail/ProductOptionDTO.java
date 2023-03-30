@@ -10,11 +10,14 @@ import lombok.*;
 @ToString
 public class ProductOptionDTO {
 
+    private Long productOptionId;
     private String content;
     private Integer price;
     private String type;
 
     public ProductOptionDTO(ProductOption productOption) {
+
+        this.productOptionId = productOption.getId();
         this.content = productOption.getContent();
         this.price = productOption.getPrice().intValue();
         this.type = productOption.getType();
