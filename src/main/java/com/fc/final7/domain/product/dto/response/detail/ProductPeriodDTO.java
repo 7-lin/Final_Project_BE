@@ -12,11 +12,13 @@ import java.text.SimpleDateFormat;
 @ToString
 public class ProductPeriodDTO {
 
+    private Long productPeriodId;
     private String startDate;
     private String endDate;
 
     public ProductPeriodDTO (ProductPeriod productPeriod) {
 
+        this.productPeriodId = productPeriod.getId();
         this.startDate = productPeriod.getStartDate();
         this.endDate = productPeriod.getEndDate();
     }
