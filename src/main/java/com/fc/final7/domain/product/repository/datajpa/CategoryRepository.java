@@ -1,4 +1,4 @@
-package com.fc.final7.domain.product.repository;
+package com.fc.final7.domain.product.repository.datajpa;
 
 import com.fc.final7.domain.product.entity.Category;
 import com.fc.final7.domain.product.repository.query.CategoryQueryRepository;

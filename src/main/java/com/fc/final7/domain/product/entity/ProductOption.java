@@ -14,7 +14,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
-@Table(name = "procut_option")
+@Table(name = "product_option")
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
 @Builder

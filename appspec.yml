@@ -19,7 +19,4 @@ hooks:
     - location: scripts/was1.sh
       timeout: 180
       runas: ec2-user
-    - location: scripts/was2.sh
-      timeout: 180
-      runas: ec2-user
 

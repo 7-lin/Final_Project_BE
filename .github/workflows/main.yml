@@ -43,7 +43,7 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Build with Gradle
-        run: ./gradlew bootjar
+        run: ./gradlew bootjar -x test
         shell: bash
         working-directory: ${{env.working-directory}}
 

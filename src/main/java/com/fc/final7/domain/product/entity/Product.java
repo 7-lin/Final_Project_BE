@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -39,11 +41,11 @@ public class Product extends Auditing {
 
     @Builder.Default
     @OneToMany(mappedBy = "product")
-    private List<ProductPeriod> productPeriods = new ArrayList<>();
+    private Set<ProductPeriod> productPeriods = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "product")
-    private List<ProductContent> productContents = new ArrayList<>();
+    private Set<ProductContent> productContents = new HashSet<>();
 
     @Builder.Default
     @OneToMany(mappedBy = "product")
@@ -51,7 +53,7 @@ public class Product extends Auditing {
 
     @Builder.Default
     @OneToMany(mappedBy = "product")
-    private List<ProductOption> options = new ArrayList<>();
+    private Set<ProductOption> options = new HashSet<>();
 
     @Column(name = "thumbnail", columnDefinition = "TEXT")
     private String thumbnail;
