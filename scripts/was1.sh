@@ -10,9 +10,9 @@ echo "[CI/CD] Current WAS PID: ${WAS1_PID}" >> /home/ec2-user/final7_logs/was1.l
 echo "[CI/CD] WAS upgrade start" >> /home/ec2-user/final7_logs/was1.log
 if [ ! -z ${WAS1_PID} ]; then
     kill -9 ${WAS1_PID}
-    nohup java -jar -Dserver.port=8080 /home/ec2-user/final7/build/libs/*.jar >> /home/ec2-user/final7_logs/was1.log &
+    nohup java -jar -Dserver.port=8080 -Djava.net.preferIPv4Stack=true /home/ec2-user/final7/build/libs/*.jar >> /home/ec2-user/final7_logs/was1.log &
 else
-    nohup java -jar -Dserver.port=8080 /home/ec2-user/final7/build/libs/*.jar >> /home/ec2-user/final7_logs/was1.log &
+    nohup java -jar -Dserver.port=8080 -Djava.net.preferIPv4Stack=true /home/ec2-user/final7/build/libs/*.jar >> /home/ec2-user/final7_logs/was1.log &
 fi
 echo "[CI/CD] WAS1 upgrade finish" >> /home/ec2-user/final7_logs/was1.log
 
