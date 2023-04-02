@@ -31,10 +31,10 @@ jobs:
           
       - name: Make default application.yml
         run: |
-          cd ./src/main/resources
-          touch ./application.yml
+          mkdir -p ./src/main/resources
+          touch ./src/main/resources/application.yml
           
-          echo "${{ vars.APPLICATION_YML }}" >> ./application.yml
+          echo "${{ vars.APPLICATION_YML }}" >> ./src/main/resources/application.yml
         shell: bash
         
       - name: Grant execute permission for gradlew
