@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@Builder
 public class ReviewRequestDTO {
     private int productId;
     private String reservationCode;
