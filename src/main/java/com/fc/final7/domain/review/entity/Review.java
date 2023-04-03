@@ -2,6 +2,7 @@ package com.fc.final7.domain.review.entity;
 
 import com.fc.final7.domain.comment.entity.Comment;
 import com.fc.final7.domain.product.entity.Product;
+import com.fc.final7.domain.reservation.entity.Reservation;
 import com.fc.final7.global.entity.Auditing;
 import lombok.*;
 
@@ -33,6 +34,10 @@ public class Review extends Auditing {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "reservation_id")
+    private Reservation reservation;
 
     @Builder.Default
     @OneToMany(mappedBy = "review")
