@@ -1,10 +1,6 @@
 package com.fc.final7.domain.product.dto.request;
 
-import com.fc.final7.domain.product.dto.request.SearchConditionDTO;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,18 +9,14 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @ToString
-public class SearchConditionListDTO {
+public class FilteringDTO {
 
-    private List<SearchConditionDTO> searchConditions = new ArrayList<>();
-    private Integer page = 0;
-
-
-    public void setSearchConditions(List<SearchConditionDTO> searchConditions) {
-        this.searchConditions = searchConditions;
-    }
-
-    public void setPage(Integer page) {
-        this.page = page - 1;
-    }
+    private List<CategoryConditionDTO> categories = new ArrayList<>();
+    private Integer maxPeriod;
+    private Integer minPeriod;
+    private Integer maxPrice;
+    private Integer minPrice;
+    private String sort;
 }

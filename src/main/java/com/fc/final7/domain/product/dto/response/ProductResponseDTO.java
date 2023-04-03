@@ -22,7 +22,7 @@ public class ProductResponseDTO {
         thumbnail = product.getThumbnail();
         productName = product.getTitle();
         productPrice = product.getPrice();
-        briefExplanation = product.getDescription();
+        briefExplanation = product.getDescription().replace("\n", "</br>");
         period = product.getTerm();
     }
 }
