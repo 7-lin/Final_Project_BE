@@ -1,6 +1,8 @@
 package com.fc.final7.domain.review.service.impl;
 
+import com.fc.final7.domain.review.dto.ReviewPagingDTO;
 import com.fc.final7.domain.review.dto.ReviewRequestDTO;
+import com.fc.final7.domain.review.dto.ReviewResponseDTO;
 import com.fc.final7.domain.review.entity.Review;
 import com.fc.final7.domain.review.entity.ReviewContent;
 import com.fc.final7.domain.review.repository.ReviewContentRepository;
@@ -9,12 +11,16 @@ import com.fc.final7.domain.review.service.ReviewService;
 import com.fc.final7.global.entity.ContentType;
 import com.fc.final7.global.image.ImageHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,9 +31,10 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewContentRepository reviewContentRepository;
 
     @Override
+    @Transactional
     public String createReview(ReviewRequestDTO reviewRequestDTO,
                                List<MultipartFile> multipartFileList,
-                               List<String> stringList) throws IOException {
+                               String text) throws IOException {
 
 
         Review requestReview = ReviewRequestDTO.toEntity(reviewRequestDTO);
@@ -36,13 +43,30 @@ public class ReviewServiceImpl implements ReviewService {
 
         imageHandler.createFolder("review", reviewId.intValue());
 
+        createReviewText(text, reviewId.intValue());
         String thumbnail = createReviewImages(multipartFileList, reviewId.intValue());
-        createReviewText(stringList, reviewId.intValue());
 
         requestReview = ReviewRequestDTO.toUpdateEntity(reviewRequestDTO, reviewId, thumbnail);
         reviewRepository.save(requestReview);
 
         return "success";
+    }
+
+    @Override
+    @Transactional
+    public ReviewPagingDTO findAllReview(Pageable pageable) {
+        Page<Review> reviews = reviewRepository.findAll(pageable);
+        List<ReviewResponseDTO> reviewResponseDTOList = reviews.getContent().stream().map(ReviewResponseDTO::simple).collect(Collectors.toList());
+
+        return ReviewPagingDTO.builder()
+                .offset(reviews.getPageable().getOffset())
+                .pageNumber(reviews.getPageable().getPageNumber())
+                .pageSize(reviews.getPageable().getPageSize())
+                .totalPages(reviews.getTotalPages())
+                .totalElements(reviews.getTotalElements())
+                .size(reviews.getSize())
+                .build();
+
     }
 
     /**
@@ -67,7 +91,7 @@ public class ReviewServiceImpl implements ReviewService {
             sequence++;
         }
 
-        int count = 10;
+        int count = 20;
         for (String url : imageList) {
             reviewContentRepository.save(ReviewContent.builder()
                     .review(Review.builder().id(Integer.toUnsignedLong(reviewId)).build())
@@ -75,6 +99,7 @@ public class ReviewServiceImpl implements ReviewService {
                     .contentType(ContentType.IMAGE)
                     .priority(Integer.toUnsignedLong(count))
                     .build());
+            count+=10;
         }
 
         return thumbnail;
@@ -85,15 +110,13 @@ public class ReviewServiceImpl implements ReviewService {
      * @param stringList 입력받은 Text 내용
      * @param reviewId 저장하기 위한 Review ID
      */
-    public void createReviewText(List<String> stringList, int reviewId){
+    public void createReviewText(String text, int reviewId){
         int count = 10;
-        for (String text : stringList){
-            reviewContentRepository.save(ReviewContent.builder()
-                    .review(Review.builder().id(Integer.toUnsignedLong(reviewId)).build())
-                    .content(text)
-                    .contentType(ContentType.TEXT)
-                    .priority(Integer.toUnsignedLong(count))
-                    .build());
-        }
+        reviewContentRepository.save(ReviewContent.builder()
+                .review(Review.builder().id(Integer.toUnsignedLong(reviewId)).build())
+                .content(text)
+                .contentType(ContentType.TEXT)
+                .priority(Integer.toUnsignedLong(count))
+                .build());
     }
 }
