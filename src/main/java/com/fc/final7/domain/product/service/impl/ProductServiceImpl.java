@@ -1,8 +1,9 @@
 package com.fc.final7.domain.product.service.impl;
 
+import com.fc.final7.domain.product.dto.response.ProductInCategoryResponseDTO;
 import com.fc.final7.domain.product.dto.response.ProductPagingDTO;
 import com.fc.final7.domain.product.dto.response.ProductResponseDTO;
-import com.fc.final7.domain.product.dto.request.SearchConditionListDTO;
+import com.fc.final7.domain.product.dto.request.FilteringDTO;
 import com.fc.final7.domain.product.dto.response.detail.ProductDetailResponseDTO;
 import com.fc.final7.domain.product.dto.response.detail.ReviewResponseDTO;
 import com.fc.final7.domain.product.entity.Product;
@@ -30,8 +31,8 @@ public class ProductServiceImpl implements ProductService{
 
 
     //그룹별 테마별 지역별 카테고리를 동적으로 받아 페이징을 처리하는 메서드
-    public ProductPagingDTO groupByCategory(SearchConditionListDTO searchConditionListDTO, Pageable pageable) {
-        Page<Product> products = categoryRepository.groupByCategorySearch(searchConditionListDTO, pageable);
+    public ProductPagingDTO groupByCategory(FilteringDTO filteringDTO, Pageable pageable) {
+        Page<Product> products = categoryRepository.groupByCategorySearch(filteringDTO, pageable);
         List<ProductResponseDTO> responseDTOS = products.stream().map(ProductResponseDTO::new).collect(Collectors.toList());
 
         return new ProductPagingDTO(responseDTOS,
@@ -62,16 +63,9 @@ public class ProductServiceImpl implements ProductService{
 
     // 상품 검색 관련 api 상품명 + 상품설명에서 검색키워드가 포함 되어있으면 반환한다.
     @Override
-    public ProductPagingDTO searchProduct(String keyWord, Pageable pageable) {
-        Page<Product> products = productRepository.searchProduct(keyWord, pageable);
-        List<ProductResponseDTO> productResponseDTOS = products.getContent().stream().map(ProductResponseDTO::new).collect(Collectors.toList());
+    public List<ProductInCategoryResponseDTO> searchProduct(String keyWord) {
+        List<Product> products = productRepository.searchProduct(keyWord);
+        return products.stream().map(ProductInCategoryResponseDTO::new).collect(Collectors.toList());
 
-        return new ProductPagingDTO(productResponseDTOS,
-                products.getPageable().getOffset(),
-                products.getPageable().getPageNumber() + 1,
-                products.getPageable().getPageSize(),
-                products.getTotalPages(),
-                products.getTotalElements(),
-                products.getSize());
     }
 }

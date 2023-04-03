@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @Builder
 @ToString
-public class SearchConditionDTO {
+public class CategoryConditionDTO {
 
     private String mainCategory;
     private String middleCategory;

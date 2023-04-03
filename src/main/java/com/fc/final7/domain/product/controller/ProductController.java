@@ -1,7 +1,9 @@
 package com.fc.final7.domain.product.controller;
 
-import com.fc.final7.domain.product.dto.request.SearchConditionListDTO;
+import com.fc.final7.domain.product.dto.request.FilteringDTO;
+import com.fc.final7.domain.product.dto.response.ProductInCategoryResponseDTO;
 import com.fc.final7.domain.product.dto.response.ProductPagingDTO;
+import com.fc.final7.domain.product.dto.response.ProductResponseDTO;
 import com.fc.final7.domain.product.dto.response.detail.ProductDetailResponseDTO;
 import com.fc.final7.domain.product.dto.response.detail.ReviewResponseDTO;
 import com.fc.final7.domain.product.service.ProductService;
@@ -20,11 +22,11 @@ public class ProductController {
     private final ProductService productService;
 
 
-    //카테고리별 상품조회 메서드
+    //카테고리별 상품조회 메서드 + 필터링
     @PostMapping("/products")
-    private BaseResponse<ProductPagingDTO> selectProductListGroupByCategory(@RequestBody SearchConditionListDTO searchConditionDTOS,
+    public BaseResponse<ProductPagingDTO> selectProductListGroupByCategory(@RequestBody FilteringDTO filteringDTO,
                                                                             @PageableDefault(size = 12) Pageable pageable) {
-        ProductPagingDTO productPagingDTO = productService.groupByCategory(searchConditionDTOS, pageable);
+        ProductPagingDTO productPagingDTO = productService.groupByCategory(filteringDTO, pageable);
         return BaseResponse.of(productPagingDTO.getProducts().size(), "성공", productPagingDTO);
     }
 
@@ -46,10 +48,9 @@ public class ProductController {
 
     //상품 검색 관련 api
     @GetMapping("/search")
-    public BaseResponse<ProductPagingDTO> searchProduct(String keyWord,
-                                                                @PageableDefault(size = 12) Pageable pageable) {
-        ProductPagingDTO pagingDTO = productService.searchProduct(keyWord, pageable);
-        return BaseResponse.of(pagingDTO.getProducts().size(), "성공", pagingDTO);
+    public BaseResponse<List<ProductInCategoryResponseDTO>> searchProduct(String keyWord) {
+        List<ProductInCategoryResponseDTO> responseDTOS = productService.searchProduct(keyWord);
+        return BaseResponse.of(responseDTOS.size(), "성공", responseDTOS);
     }
 
 }

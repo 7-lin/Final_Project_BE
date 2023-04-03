@@ -45,7 +45,7 @@ public class Review extends Auditing {
     @Column(name = "title", columnDefinition = "VARCHAR(40)")
     private String title;
 
-    @Column(name = "grade", columnDefinition = "DECIMAL(1,1)")
+    @Column(name = "grade", columnDefinition = "DECIMAL(2,1)")
     private BigDecimal grade;
 
     @Column(name = "thumbnail", columnDefinition = "TEXT")

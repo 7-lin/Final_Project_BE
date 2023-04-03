@@ -32,7 +32,7 @@ public class ImageHandler {
      * @return image URL
      * @throws IOException
      */
-    public String saveImages(String imageType, String imageRole, int id, int sequence, MultipartFile multipartFile) throws IOException {
+    public String saveImage(String imageType, String imageRole, int id, int sequence, MultipartFile multipartFile) throws IOException {
 
         String orgImageName = multipartFile.getOriginalFilename();
         String orgImageExt = FilenameUtils.getExtension(orgImageName);
