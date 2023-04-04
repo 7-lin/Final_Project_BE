@@ -109,6 +109,37 @@ public class ReviewServiceImpl implements ReviewService {
         return ReviewResponseDTO.detail(responseReview, reviewContentDTOList, tagList, option);
     }
 
+    @Override
+    @Transactional
+    public Boolean matchReviewPassword(int reviewId, String password) {
+        Review responseReview = reviewRepository.findByIdAndPassword((long) reviewId, password).orElseThrow(ReviewPasswordMismatchException::new);
+
+        return true;
+    }
+
+
+    @Override
+    @Transactional
+    public String updateReview(int reviewId,
+                                          ReviewRequestDTO reviewRequestDTO,
+                                          List<MultipartFile> multipartFileList,
+                                          String text) throws IOException {
+        // 기존 리뷰 내용 삭제
+        Review responseReview = reviewRepository.findById((long) reviewId).get();
+        reviewContentRepository.deleteAllByReview(responseReview);
+
+        imageHandler.createFolder("review", reviewId);
+
+        // 리뷰 저장
+        createReviewText(text, reviewId);
+        String thumbnail = createReviewImages(multipartFileList, reviewId);
+
+        Review requestReview = ReviewRequestDTO.toUpdateEntity(reviewRequestDTO, (long) reviewId, thumbnail);
+        reviewRepository.save(requestReview);
+
+        return "success";
+    }
+
     /**
      * Image 서버 저장 및 URL Review Content Table 저장 수행 Method
      * @param multipartFileList 입력받은 이미지 파일 List

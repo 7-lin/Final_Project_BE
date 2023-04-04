@@ -17,4 +17,11 @@ public interface ReviewService {
     ReviewPagingDTO findAllReview(Pageable pageable);
 
     ReviewResponseDTO findDetailReview(int reviewId);
+
+    Boolean matchReviewPassword(int reviewId, String password);
+
+    String updateReview(int reviewId,
+                                   ReviewRequestDTO reviewRequestDTO,
+                                   List<MultipartFile> multipartFileList,
+                                   String text) throws IOException;
 }
