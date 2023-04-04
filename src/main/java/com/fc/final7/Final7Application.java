@@ -25,7 +25,7 @@ public class Final7Application {
 	}
 
 	@Bean
-	public WebMvcConfigurer corsConfigure() {
+	public WebMvcConfigurer corsConfigurer() {
 		return new WebMvcConfigurer() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {

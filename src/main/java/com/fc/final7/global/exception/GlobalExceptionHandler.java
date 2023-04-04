@@ -32,4 +32,18 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.PRODUCT_NOT_FOUND);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ReviewPasswordMismatchException.class)
+    protected ResponseEntity<ErrorResponse> handleReviewPasswordMismatchException(ReviewPasswordMismatchException e) {
+        log.error(e.getMessage(), e.getStackTrace());
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.REVIEW_PASSWORD_MISMATCH);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ReviewNotFoundException.class)
+    protected ResponseEntity<ErrorResponse> handleReviewNotFoundException(ReviewNotFoundException e) {
+        log.error(e.getMessage(), e.getStackTrace());
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.REVIEW_NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 }
