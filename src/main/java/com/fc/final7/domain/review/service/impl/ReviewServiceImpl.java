@@ -140,6 +140,15 @@ public class ReviewServiceImpl implements ReviewService {
         return "success";
     }
 
+    @Override
+    @Transactional
+    public String deleteReview(int reviewId) {
+
+        reviewRepository.updateReviewDelete((long) reviewId, Posting.DELETE);
+
+        return "success";
+    }
+
     /**
      * Image 서버 저장 및 URL Review Content Table 저장 수행 Method
      * @param multipartFileList 입력받은 이미지 파일 List
