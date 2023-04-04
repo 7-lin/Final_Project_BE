@@ -15,4 +15,6 @@ public interface ReviewService {
                         String text) throws IOException;
 
     ReviewPagingDTO findAllReview(Pageable pageable);
+
+    ReviewResponseDTO findDetailReview(int reviewId);
 }

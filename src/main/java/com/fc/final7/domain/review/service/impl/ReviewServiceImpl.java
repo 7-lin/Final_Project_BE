@@ -1,14 +1,20 @@
 package com.fc.final7.domain.review.service.impl;
 
+import com.fc.final7.domain.product.entity.Category;
+import com.fc.final7.domain.product.repository.datajpa.CategoryRepository;
+import com.fc.final7.domain.review.dto.ReviewContentDTO;
 import com.fc.final7.domain.review.dto.ReviewPagingDTO;
 import com.fc.final7.domain.review.dto.ReviewRequestDTO;
 import com.fc.final7.domain.review.dto.ReviewResponseDTO;
+import com.fc.final7.domain.review.entity.Posting;
 import com.fc.final7.domain.review.entity.Review;
 import com.fc.final7.domain.review.entity.ReviewContent;
 import com.fc.final7.domain.review.repository.ReviewContentRepository;
 import com.fc.final7.domain.review.repository.ReviewRepository;
 import com.fc.final7.domain.review.service.ReviewService;
 import com.fc.final7.global.entity.ContentType;
+import com.fc.final7.global.exception.ReviewNotFoundException;
+import com.fc.final7.global.exception.ReviewPasswordMismatchException;
 import com.fc.final7.global.image.ImageHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +26,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,13 +36,13 @@ public class ReviewServiceImpl implements ReviewService {
     private final ImageHandler imageHandler;
     private final ReviewRepository reviewRepository;
     private final ReviewContentRepository reviewContentRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     @Transactional
     public String createReview(ReviewRequestDTO reviewRequestDTO,
                                List<MultipartFile> multipartFileList,
                                String text) throws IOException {
-
 
         Review requestReview = ReviewRequestDTO.toEntity(reviewRequestDTO);
         Review responseReview = reviewRepository.save(requestReview);
@@ -55,10 +62,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     @Transactional
     public ReviewPagingDTO findAllReview(Pageable pageable) {
-        Page<Review> reviews = reviewRepository.findAll(pageable);
+        Page<Review> reviews = reviewRepository.findAllByPosting(Posting.POSTING, pageable);
         List<ReviewResponseDTO> reviewResponseDTOList = reviews.getContent().stream().map(ReviewResponseDTO::simple).collect(Collectors.toList());
 
         return ReviewPagingDTO.builder()
+                .reviewList(reviewResponseDTOList)
                 .offset(reviews.getPageable().getOffset())
                 .pageNumber(reviews.getPageable().getPageNumber())
                 .pageSize(reviews.getPageable().getPageSize())
@@ -67,6 +75,38 @@ public class ReviewServiceImpl implements ReviewService {
                 .size(reviews.getSize())
                 .build();
 
+    }
+
+    @Override
+    @Transactional
+    public ReviewResponseDTO findDetailReview(int reviewId) {
+
+
+        // 사용할 Review 엔티티
+        Review responseReview = reviewRepository.findAllByIdAndPosting((long) reviewId, Posting.POSTING).orElseThrow(ReviewNotFoundException::new);
+        // 조회수 증가 적용
+        reviewRepository.setViewCount((long) reviewId);
+
+        // 리뷰 내용 List ( 이미지 + 텍스트 )
+        List<ReviewContentDTO> reviewContentDTOList =
+                reviewContentRepository.findAllByReview(responseReview).stream().map(ReviewContentDTO::new).collect(Collectors.toList());
+
+        // 리뷰 Tag List 를 위한 category List
+        List<Category> categoryList = categoryRepository.findAllByProduct(responseReview.getProduct());
+        // 리뷰 Tag List 저장
+        List<String> tagList = new ArrayList<>();
+
+        // Category 가장 하단 / 중단 구분하여 저장
+        for (Category category : categoryList){
+            if (!Objects.isNull(category.getSubdivision())) tagList.add(category.getSubdivision());
+            else if (!Objects.isNull(category.getMiddleCategory())) tagList.add(category.getMiddleCategory());
+        }
+
+        // 옵션 없으면 "-"
+        String option = "-";
+        if (!Objects.isNull(responseReview.getReservation().getProductOption())) option =  responseReview.getReservation().getProductOption().getContent();
+
+        return ReviewResponseDTO.detail(responseReview, reviewContentDTOList, tagList, option);
     }
 
     /**
@@ -107,7 +147,7 @@ public class ReviewServiceImpl implements ReviewService {
 
     /**
      * Text Review Content Table 저장 수행 Method
-     * @param stringList 입력받은 Text 내용
+     * @param text 입력받은 Text 내용
      * @param reviewId 저장하기 위한 Review ID
      */
     public void createReviewText(String text, int reviewId){
