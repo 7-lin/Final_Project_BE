@@ -1,12 +1,16 @@
 package com.fc.final7.domain.review.repository;
 
+import com.fc.final7.domain.review.entity.Posting;
 import com.fc.final7.domain.review.entity.Review;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
@@ -16,4 +20,18 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
             " where r.product.id = :productId" +
             " order by r.createdDate desc")
     List<Review> selectProductDetailReviews(@Param("productId") Long productId, Pageable pageable);
+
+    @Modifying
+    @Query("update Review r set r.viewCount=r.viewCount+1 WHERE r.id=:reviewId")
+    void setViewCount(@Param("reviewId") Long reviewId);
+
+    Optional<Review> findByIdAndPassword(@Param("reviewId") Long reviewId, @Param("password") String password);
+
+    Page<Review> findAllByPosting(Posting posting, Pageable pageable);
+
+    Optional<Review> findAllByIdAndPosting(Long reviewId, Posting posting);
+
+    @Modifying
+    @Query("update Review r set r.posting = :posting WHERE r.id=:reviewId")
+    void updateReviewDelete(Long reviewId, @Param("posting") Posting posting);
 }

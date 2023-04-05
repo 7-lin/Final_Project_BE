@@ -79,7 +79,7 @@ public class ImageHandler {
      * @throws IOException
      */
     public String createFolder(String folderType, int id) throws IOException {
-        Path folderPath = Paths.get(LOCAL_URL + folderType + "s" + id + "/");
+        Path folderPath = Paths.get(LOCAL_URL + folderType + "s/" + id + "/");
 
         FileSystemUtils.deleteRecursively(folderPath);
         Files.createDirectories(folderPath);
