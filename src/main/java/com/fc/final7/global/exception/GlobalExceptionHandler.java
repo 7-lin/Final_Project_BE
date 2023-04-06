@@ -105,4 +105,12 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.COMMENT_PASSWORD_MISMATCH);
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(UnusualAccessRouteException.class)
+    protected ResponseEntity<ErrorResponse> handleUnusualAccessRouteException(UnusualAccessRouteException e) {
+        log.error(e.getMessage(), e.getStackTrace());
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.UNUSUAL_ACCESS_ROUTE);
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
 }

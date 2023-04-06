@@ -21,7 +21,9 @@ public enum ErrorCode{
     PRODUCT_NOT_FOUND(404, "PRODUCT-001", "존재하지 않는 상품입니다."),
     REVIEW_PASSWORD_MISMATCH(401, "REVIEW-001", "리뷰 비밀번호 불일치한 경우"),
     REVIEW_NOT_FOUND(404, "REVIEW-002", "리뷰가 없는 경우"),
-    COMMENT_PASSWORD_MISMATCH(401, "COMMENT-001", "댓글 비밀번호 불일치한 경우");
+    COMMENT_PASSWORD_MISMATCH(401, "COMMENT-001", "댓글 비밀번호 불일치한 경우"),
+    UNUSUAL_ACCESS_ROUTE(403, "RESERVATION_001", "허가되지 않는 사람이 예약상세 페이지에 접근한 경우");
+
 
 
 
