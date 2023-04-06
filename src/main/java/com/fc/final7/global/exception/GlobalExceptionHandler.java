@@ -46,4 +46,11 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.REVIEW_NOT_FOUND);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(CommentPasswordMismatchException.class)
+    protected ResponseEntity<ErrorResponse> handleReviewNotFoundException(CommentPasswordMismatchException e) {
+        log.error(e.getMessage(), e.getStackTrace());
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.COMMENT_PASSWORD_MISMATCH);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
 }
