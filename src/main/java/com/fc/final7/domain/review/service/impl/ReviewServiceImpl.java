@@ -2,10 +2,7 @@ package com.fc.final7.domain.review.service.impl;
 
 import com.fc.final7.domain.product.entity.Category;
 import com.fc.final7.domain.product.repository.datajpa.CategoryRepository;
-import com.fc.final7.domain.review.dto.ReviewContentDTO;
-import com.fc.final7.domain.review.dto.ReviewPagingDTO;
-import com.fc.final7.domain.review.dto.ReviewRequestDTO;
-import com.fc.final7.domain.review.dto.ReviewResponseDTO;
+import com.fc.final7.domain.review.dto.*;
 import com.fc.final7.domain.review.entity.Posting;
 import com.fc.final7.domain.review.entity.Review;
 import com.fc.final7.domain.review.entity.ReviewContent;
@@ -102,11 +99,7 @@ public class ReviewServiceImpl implements ReviewService {
             else if (!Objects.isNull(category.getMiddleCategory())) tagList.add(category.getMiddleCategory());
         }
 
-        // 옵션 없으면 "-"
-        String option = "-";
-        if (!Objects.isNull(responseReview.getReservation().getProductOption())) option =  responseReview.getReservation().getProductOption().getContent();
-
-        return ReviewResponseDTO.detail(responseReview, reviewContentDTOList, tagList, option);
+        return ReviewResponseDTO.detail(responseReview, reviewContentDTOList, tagList);
     }
 
     @Override
