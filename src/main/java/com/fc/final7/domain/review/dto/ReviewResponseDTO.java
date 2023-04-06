@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 public class ReviewResponseDTO {
 
     private Integer reviewId;
+    private Integer productId;
+    private Integer reservationId;
     private String reviewThumbnail;
     private String reviewWriter;
     private BigDecimal reviewGrade;
@@ -51,6 +53,8 @@ public class ReviewResponseDTO {
                                             List<String> tagList){
         return ReviewResponseDTO.builder()
                 .reviewId(review.getId().intValue())
+                .productId(review.getProduct().getId().intValue())
+                .reservationId(review.getReservation().getId().intValue())
                 .reviewWriter(review.getName())
                 .reviewGrade(review.getGrade())
                 .viewCount(review.getViewCount().intValue())
