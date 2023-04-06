@@ -1,12 +1,9 @@
 package com.fc.final7.domain.product.entity;
 
-import com.fc.final7.domain.reservation.entity.Reservation;
 import lombok.*;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -28,10 +25,6 @@ public class ProductOption {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id")
     private Product product;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "productOption")
-    private List<Reservation> reservations = new ArrayList<>();
 
     @Column(name = "type", columnDefinition = "VARCHAR(10)")
     private String type;

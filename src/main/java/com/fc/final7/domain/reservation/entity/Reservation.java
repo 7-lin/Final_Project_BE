@@ -1,13 +1,13 @@
 package com.fc.final7.domain.reservation.entity;
 
 import com.fc.final7.domain.member.entity.Member;
-import com.fc.final7.domain.product.entity.Product;
-import com.fc.final7.domain.product.entity.ProductOption;
-import com.fc.final7.domain.product.entity.ProductPeriod;
 import com.fc.final7.global.entity.Auditing;
 import lombok.*;
 
 import javax.persistence.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.FetchType.LAZY;
@@ -27,17 +27,18 @@ public class Reservation extends Auditing {
     @Column(name = "reservation_id")
     private Long id;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "product_period_id")
-    private ProductPeriod productPeriod;
+    @Builder.Default
+    @OneToMany(mappedBy = "reservation")
+    private Set<ReservationPeriod> periods = new HashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "reservation")
+    private Set<ReservationOption> options = new HashSet<>();
 
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "product_option_id")
-    private ProductOption productOption;
 
     @Column(name = "status", columnDefinition = "VARCHAR(20)")
     @Enumerated(STRING)
@@ -58,7 +59,7 @@ public class Reservation extends Auditing {
     @Column(name = "price")
     private Long price;
 
-    @Column(name = "people")
+    @Column(name = "people", columnDefinition = "VARCHAR(20)")
     private Integer people;
 
     @Column(name = "reservation_code", columnDefinition = "VARCHAR(40)")
