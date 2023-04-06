@@ -1,18 +1,16 @@
 package com.fc.final7.domain.member.enums;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum Role {
 
-    MEMBER("회원"),
-    ADMIN("관리자");
+    MEMBER("ROLE_MEMBER", "회원"),
+    ADMIN("ROLE_ADMIN", "관리자");
 
 
-    private final String role;
-
-    Role(String role) {
-        this.role = role;
-    }
-
-    public String getRole(){
-        return role;
-    }
+    private final String key;
+    private final String title;
 }
