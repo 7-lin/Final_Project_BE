@@ -10,6 +10,8 @@ import com.fc.final7.domain.product.repository.datajpa.ProductPeriodRepository;
 import com.fc.final7.domain.reservation.dto.request.ProductOptionRequestDTO;
 import com.fc.final7.domain.reservation.dto.request.ProductPeriodRequestDTO;
 import com.fc.final7.domain.reservation.dto.request.ReservationRequestDTO;
+import com.fc.final7.domain.reservation.dto.response.ReservationResponseDTO;
+import com.fc.final7.domain.reservation.dto.response.detail.ReservationDetailResponseDTO;
 import com.fc.final7.domain.reservation.entity.Reservation;
 import com.fc.final7.domain.reservation.entity.ReservationOption;
 import com.fc.final7.domain.reservation.entity.ReservationPeriod;
@@ -17,12 +19,15 @@ import com.fc.final7.domain.reservation.repository.ReservationOptionRepository;
 import com.fc.final7.domain.reservation.repository.ReservationPeriodRepository;
 import com.fc.final7.domain.reservation.repository.ReservationRepository;
 import com.fc.final7.domain.reservation.service.ReservationService;
+import com.fc.final7.global.exception.UnusualAccessRouteException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static com.fc.final7.domain.reservation.entity.Status.WAITING;
 import static java.time.LocalDateTime.now;
@@ -109,8 +114,40 @@ public class ReservationServiceImpl implements ReservationService {
             reservationOptionRepository.save(reservationOption);
         }
     }
-
     public String makeReservationCode() {
         return now().format(ISO_LOCAL_DATE).replace("-", "") + new Random().nextInt(10000);
+    }
+
+    //멤버가 마이페이지에 들어갔을때 보여지는 예약 리스트 반환 메서드
+    @Transactional(readOnly = true)
+    @Override
+    public List<ReservationResponseDTO> reservationInquiryByMember(String header) {
+        String email = jwtProvider.getSubjectFromToken(header);
+        Member member = memberRepository.findByEmail(email).get();
+        List<Reservation> reservations = reservationRepository.selectReservations(member.getId());
+        return reservations.stream().map(ReservationResponseDTO::new).collect(Collectors.toList());
+    }
+
+
+    //회원 예약 상세정보 페이지 반환 메서드
+    @Transactional(readOnly = true)
+    @Override
+    public ReservationDetailResponseDTO reservationDetail(Long reservationId, String header) {
+        //토큰이 없는 즉 로그인 되지 않은 사용자가 리뷰 상세페이지에 접근했을때
+        if(header == null) {
+            throw new UnusualAccessRouteException();
+        }
+
+        String email = jwtProvider.getSubjectFromToken(header);
+        Member member = memberRepository.findByEmail(email).get();
+        Long memberId = member.getId();
+        Reservation reservation = reservationRepository.selectReservationDetailByReservationId(reservationId).get();
+        Long id = reservation.getMember().getId();
+
+        //토큰은 있지만 다른 회원의 리뷰 상세페이지에 접근했을때
+        if(!Objects.equals(memberId, id)) {
+            throw new UnusualAccessRouteException();
+        }
+        return new ReservationDetailResponseDTO(reservation);
     }
 }
