@@ -48,9 +48,16 @@ dependencies {
 
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis:2.7.9'
+	implementation 'io.lettuce:lettuce-core:6.2.3.RELEASE'
 
 	//jwt
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+	// email
+	implementation 'org.springframework.boot:spring-boot-starter-mail:2.7.10'
+
+	// oauth2
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client:2.7.10'
 
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
