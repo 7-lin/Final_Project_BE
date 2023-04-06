@@ -1,13 +1,11 @@
 package com.fc.final7.domain.member.dto;
 
 import com.fc.final7.domain.member.enums.Gender;
-import com.fc.final7.domain.member.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -22,6 +20,9 @@ public class SignUpRequestDto {
 
     @NotNull(message = "비밀번호를 입력해주세요")
     private String password;
+
+    @NotNull(message = "비밀번호를 입력해주세요")
+    private String validPassword;
 
     @NotNull(message = "이름을 입력해주세요")
     private String name;
