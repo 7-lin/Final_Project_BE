@@ -5,6 +5,7 @@ import com.fc.final7.domain.member.dto.SignUpRequestDto;
 import com.fc.final7.domain.member.enums.Gender;
 import com.fc.final7.domain.member.enums.IsMember;
 import com.fc.final7.domain.member.enums.Role;
+import com.fc.final7.domain.member.recommend.entity.Survey;
 import com.fc.final7.domain.reservation.entity.Reservation;
 import com.fc.final7.global.entity.Auditing;
 import lombok.AllArgsConstructor;
@@ -47,6 +48,10 @@ public class Member extends Auditing {
     @Builder.Default
     @OneToMany(mappedBy = "member")
     private List<Reservation> reservations = new ArrayList<>();
+
+    @OneToOne
+    @JoinColumn(name = "suevey_id")
+    private Survey survey;
 
     @Builder.Default
     @Column(name = "role", columnDefinition = "VARCHAR(64)")
