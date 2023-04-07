@@ -104,7 +104,7 @@ public class JwtProvider {
 
     public boolean validate(String requestAccessTokenInHeader) {
         String requestAccessToken = resolveToken(requestAccessTokenInHeader);
-        return validateAccessToken(requestAccessToken); // true = 재발급
+        return validateAccessToken(requestAccessTokenInHeader); // true = 재발급
     }
 
     // "Bearer {AT}"에서 {AT} 추출
