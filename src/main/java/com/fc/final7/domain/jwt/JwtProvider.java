@@ -1,119 +1,159 @@
 package com.fc.final7.domain.jwt;
 
 import com.fc.final7.domain.jwt.dto.TokenDto;
-import com.fc.final7.domain.member.entity.Member;
+import com.fc.final7.domain.member.repository.MemberRepository;
+
+import com.fc.final7.domain.member.service.MemberDetailsServiceImpl;
+import com.fc.final7.global.redis.RedisService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
+@Getter
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class JwtProvider {
 
     private final JwtProperties jwtProperties;
+    private final MemberDetailsServiceImpl memberDetailsService;
+    private final RedisService redisService;
+    private final MemberRepository memberRepository;
 
-    private final UserDetailsService userDetailsService;
-    private final RedisTemplate<String, String> redisTemplate;
+    private static final String EMAIL_KEY = "email";
+    private static final String AUTHORITIES_KEY = "role";
+    private static final String url = "https://localhost:8080";
 
 
-    public String createAccessToken(Member member) {
-        Claims claims = setTokenClaims(member)
-                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getAccessTokenValidTime()));
+    public TokenDto createToken(String email, String authorities) {
 
-        String accessToken = buildToken(claims);
+        Claims claims = Jwts.claims()
+                .setSubject("access-token")
+                .setIssuer(jwtProperties.getIssuer())
+                .setIssuedAt(new Date());
+        String accessToken = Jwts.builder().setClaims(claims)
+                .claim(EMAIL_KEY, email)
+                .claim(AUTHORITIES_KEY, authorities)
+                .setHeaderParam("typ", "JWT")
+                .setHeaderParam("alg", "HS512")
+                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecretKey())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenValidTime()))
+                .compact();
 
-        String accessTokenKey = "accessToken" + member.getId();
-        redisTemplate.opsForValue().set(accessTokenKey, accessToken, jwtProperties.getAccessTokenValidTime(), TimeUnit.SECONDS);
-        return accessToken;
+        String refreshToken = Jwts.builder().
+                claim(EMAIL_KEY, email)
+                .setHeaderParam("typ", "JWT")
+                .setHeaderParam("alg", "HS512")
+                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecretKey())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenValidTime()))
+                .setSubject("refresh-token")
+                .compact();
+
+        return new TokenDto(accessToken, refreshToken, String.valueOf(jwtProperties.getAccessTokenValidTime()), String.valueOf(jwtProperties.getRefreshTokenValidTime()));
     }
 
 
-    public String createRefreshToken(Member member) {
-        Claims claims = setTokenClaims(member)
-                .setExpiration(new Date(System.currentTimeMillis() + jwtProperties.getRefreshTokenValidTime()));
-
-        String refreshToken = buildToken(claims);
-
-        String refreshTokenKey = "refreshToken" + member.getId();
-        redisTemplate.opsForValue().set(refreshTokenKey, refreshToken, jwtProperties.getRefreshTokenValidTime(), TimeUnit.SECONDS);
-        return refreshToken;
-    }
-
-    public TokenDto issue(Member member) {
-        Date date = new Date();
-        String accessToken = createAccessToken(member);
-        String refreshToken = createRefreshToken(member);
-
-        return TokenDto.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .accessStartTime(String.valueOf(date))
-                .accessExpirationTime(getExpiration(accessToken))
-                .refreshExpirationTime(getExpiration(refreshToken))
-                .build();
+    @Transactional
+    public void saveRefreshToken(String email, String refreshToken) {
+        redisService.setValuesWithTimeout("RT : " + email, refreshToken, getTokenExpirationTime(refreshToken), TimeUnit.SECONDS);
     }
 
 
-    public TokenDto reIssue(String accessToken, String refreshToken, Member member) {
-        // 둘 중 하나가 만료된 경우, 둘 다 재발급해서 업데이트
-        boolean validRefreshToken = validRefreshToken(refreshToken);
-        boolean validAccessToken = validAccessToken(accessToken);
+    @Transactional
+    public TokenDto reissue(String requestAccessTokenInHeader, String requestRefreshToken) {
+        String requestAccessToken = resolveToken(requestAccessTokenInHeader);
 
-        if (validAccessToken == false || validRefreshToken == false){
-            String createdAccessToken = createAccessToken(member);
-            String createdRefreshToken = createRefreshToken(member);
-            Date date = new Date();
+        Authentication authentication = getAuthentication(requestAccessToken);
+        String principal = getPrincipal(requestAccessToken);
 
-            return TokenDto.builder()
-                    .accessToken(createdAccessToken)
-                    .refreshToken(createdRefreshToken)
-                    .accessStartTime(String.valueOf(date))
-                    .accessExpirationTime(getExpiration(accessToken))
-                    .refreshExpirationTime(getExpiration(refreshToken))
-                    .build();
+        String refreshTokenInRedis = redisService.getValues("RT : " + principal);
+        if (refreshTokenInRedis == null) { // Redis에 저장되어 있는 RT가 없을 경우
+            return null; // -> 재로그인 요청
+        }
+
+        // 요청된 RT의 유효성 검사 & Redis에 저장되어 있는 RT와 같은지 비교
+        if (!validateRefreshToken(requestRefreshToken) || !refreshTokenInRedis.equals(requestRefreshToken)) {
+            redisService.deleteValues("RT :" + principal); // 탈취 가능성 -> 삭제
+            return null; // -> 재로그인 요청
+        }
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String authorities = getAuthorities(authentication);
+
+        // 토큰 재발급 및 Redis 업데이트
+        redisService.deleteValues("RT :" + principal); // 기존 RT 삭제
+        TokenDto tokenDto = createToken(principal, authorities);
+        saveRefreshToken(principal, tokenDto.getRefreshToken());
+        return tokenDto;
+    }
+
+    public boolean validate(String requestAccessTokenInHeader) {
+        String requestAccessToken = resolveToken(requestAccessTokenInHeader);
+        return validateAccessToken(requestAccessTokenInHeader); // true = 재발급
+    }
+
+    // "Bearer {AT}"에서 {AT} 추출
+    public String resolveToken(String requestAccessTokenInHeader) {
+        if (requestAccessTokenInHeader != null && requestAccessTokenInHeader.startsWith(jwtProperties.getTokenPrefix())) {
+            return requestAccessTokenInHeader.substring(jwtProperties.getTokenPrefix().length());
         }
         return null;
     }
 
-    public String getRefreshTokenKey(String refreshToken) {
-        return jwtProperties.getTokenPrefix() + refreshToken;
+    public boolean validateAccessToken(String accessToken) {
+        try {
+            return getClaimsFromToken(accessToken)
+                    .getExpiration()
+                    .before(new Date());
+        } catch (ExpiredJwtException e) {
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
-    public String getAccessTokenKey(String accessToken) {
-        return jwtProperties.getTokenPrefix() + accessToken;
+    public boolean validateRefreshToken(String refreshToken) {
+        if (redisService.getValues(getSubjectFromToken(refreshToken)) != null) {
+            return true;
+        }
+        return false;
     }
 
-    public boolean validRefreshToken(String refreshToken) {
-        String refreshTokenKey = getRefreshTokenKey(refreshToken);
-        return redisTemplate.hasKey(refreshTokenKey);  // key가 살아있으면 true
+    @Transactional
+    public TokenDto generateToken(String email, String authorities) {
+        // RT가 이미 있을 경우
+        if (redisService.getValues("RT : " + email) != null) {
+            redisService.deleteValues("RT : " + email); // 삭제
+        }
+
+        // AT, RT 생성 및 Redis에 RT 저장
+        TokenDto tokenDto = createToken(email, authorities);
+        saveRefreshToken(email, tokenDto.getRefreshToken());
+        return tokenDto;
     }
 
-    public boolean validAccessToken(String accessToken) {
-        String accessTokenKey = getAccessTokenKey(accessToken);
-        return redisTemplate.hasKey(accessTokenKey);
+    // 권한 이름 가져오기
+    public String getAuthorities(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
     }
 
-    public void deleteRefreshToken(String refreshToken) {
-        String refreshTokenKey = getRefreshTokenKey(refreshToken);
-        redisTemplate.delete(refreshTokenKey);
-    }
-
-    public void deleteAccessToken(String accessToken) {
-        String refreshTokenKey = getAccessTokenKey(accessToken);
-        redisTemplate.delete(refreshTokenKey);
-    }
 
     public Claims getClaimsFromToken(String token) {
         return Jwts.parser()
@@ -121,6 +161,7 @@ public class JwtProvider {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
 
     public String getSubjectFromToken(String token) {
         return Jwts.parser()
@@ -130,32 +171,25 @@ public class JwtProvider {
                 .getSubject();
     }
 
+    public long getTokenExpirationTime(String token) {
+        return getClaimsFromToken(token).getExpiration().getTime();
+    }
+
+
     public String getExpiration(String token) {
         return String.valueOf(getClaimsFromToken(token).getExpiration());
     }
 
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(getSubjectFromToken(token));  // 사용자 정보
+        String email = getClaimsFromToken(token).get(EMAIL_KEY).toString();
+        UserDetails userDetails = memberDetailsService.loadUserByUsername(email);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());  // 사용자 객체
     }
 
-
-    private String buildToken(Claims claims) {
-        return Jwts.builder()
-                .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecretKey())
-                .compact();
-    }
-
-    public Claims setTokenClaims(Member member) {
-        return Jwts.claims()
-                .setSubject(member.getEmail())
-                .setIssuer(jwtProperties.getIssuer())
-                .setIssuedAt(new Date());
+    public String getPrincipal(String requestAccessToken) {
+//        return email;
+        return getAuthentication(requestAccessToken).getPrincipal().toString();
     }
 
 }
-
-
-

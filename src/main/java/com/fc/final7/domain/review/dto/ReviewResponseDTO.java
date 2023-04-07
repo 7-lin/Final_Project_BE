@@ -6,7 +6,8 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Getter
@@ -17,6 +18,8 @@ import java.util.List;
 public class ReviewResponseDTO {
 
     private Integer reviewId;
+    private Integer productId;
+    private Integer reservationId;
     private String reviewThumbnail;
     private String reviewWriter;
     private BigDecimal reviewGrade;
@@ -26,9 +29,10 @@ public class ReviewResponseDTO {
 
     private String productThumbnail;
     private String productTitle;
-    private String reservationStart;
-    private String reservationEnd;
-    private String reservationOption;
+
+    private List<ReviewReservationPeriodDTO> reviewReservationPeriodDTOList = new ArrayList<>();
+    private List<ReviewReservationOptionDTO> reviewReservationOptionDTOList = new ArrayList<>();
+
     private Integer reservationPrice;
     private Integer reservationPeople;
 
@@ -46,10 +50,11 @@ public class ReviewResponseDTO {
 
     static public ReviewResponseDTO detail (Review review,
                                             List<ReviewContentDTO> reviewContentDTOList,
-                                            List<String> tagList,
-                                            String option){
+                                            List<String> tagList){
         return ReviewResponseDTO.builder()
                 .reviewId(review.getId().intValue())
+                .productId(review.getProduct().getId().intValue())
+                .reservationId(review.getReservation().getId().intValue())
                 .reviewWriter(review.getName())
                 .reviewGrade(review.getGrade())
                 .viewCount(review.getViewCount().intValue())
@@ -58,11 +63,21 @@ public class ReviewResponseDTO {
 
                 .productThumbnail(review.getProduct().getThumbnail())
                 .productTitle(review.getProduct().getTitle())
-                .reservationStart(review.getReservation().getProductPeriod().getStartDate())
-                .reservationEnd(review.getReservation().getProductPeriod().getEndDate())
-                .reservationOption(option)
+
+                .reviewReservationPeriodDTOList(Optional.ofNullable(review.getReservation().getPeriods())
+                        .orElseGet(Collections::emptySet)
+                        .stream()
+                        .map(reservationPeriod -> Objects.isNull(reservationPeriod) ? null : new ReviewReservationPeriodDTO(reservationPeriod))
+                        .collect(Collectors.toList()))
+                .reviewReservationOptionDTOList(Optional.ofNullable(review.getReservation().getOptions())
+                        .orElseGet(Collections::emptySet)
+                        .stream()
+                        .map(reservationOption -> Objects.isNull(reservationOption) ? null : new ReviewReservationOptionDTO(reservationOption))
+                        .collect(Collectors.toList()))
+
                 .reservationPrice(review.getReservation().getPrice().intValue())
                 .reservationPeople(review.getReservation().getPeople())
+
                 .reviewContentDTOList(reviewContentDTOList)
                 .tagList(tagList)
                 .build();

@@ -1,9 +1,11 @@
 package com.fc.final7.domain.member.entity;
 
+import com.fc.final7.domain.member.dto.MemberDeleteDto;
 import com.fc.final7.domain.member.dto.SignUpRequestDto;
 import com.fc.final7.domain.member.enums.Gender;
 import com.fc.final7.domain.member.enums.IsMember;
 import com.fc.final7.domain.member.enums.Role;
+import com.fc.final7.domain.member.recommend.entity.Survey;
 import com.fc.final7.domain.reservation.entity.Reservation;
 import com.fc.final7.global.entity.Auditing;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static com.fc.final7.domain.member.enums.IsMember.NO;
 import static com.fc.final7.domain.member.enums.IsMember.YES;
 import static com.fc.final7.domain.member.service.MemberService.validationEmail;
 import static com.fc.final7.domain.member.service.MemberService.validationPassword;
@@ -46,6 +49,10 @@ public class Member extends Auditing {
     @OneToMany(mappedBy = "member")
     private List<Reservation> reservations = new ArrayList<>();
 
+    @OneToOne
+    @JoinColumn(name = "suevey_id")
+    private Survey survey;
+
     @Builder.Default
     @Column(name = "role", columnDefinition = "VARCHAR(64)")
     @Enumerated(STRING)
@@ -60,7 +67,7 @@ public class Member extends Auditing {
     @Column(name = "name", columnDefinition = "VARCHAR(20)")
     private String name;
 
-    @Column(name = "phone", columnDefinition = "VARCHAR(40)")
+    @Column(name = "phone", columnDefinition = "VARCHAR(40)", unique = true)
     private String phone;
 
     @Column(name = "birth", columnDefinition = "DATE")
@@ -72,9 +79,6 @@ public class Member extends Auditing {
 
     @Column(name = "age")
     private Integer age;
-
-    @Column(name = "thumbnail", columnDefinition = "TEXT")
-    private String thumbnail;
 
     @Column(name = "category_group", columnDefinition = "VARCHAR(60)")
     private String group;
@@ -93,12 +97,12 @@ public class Member extends Auditing {
 
     public static Member createMember(SignUpRequestDto memberDto, PasswordEncoder encoder) throws Exception {
         if (validationEmail(memberDto) == false) {
-            throw new Exception("이메일 형식으로 입력해주세요");
+            throw new IllegalArgumentException();
         }
         if (validationPassword(memberDto) == false) {
-            throw new Exception("8~16자의 비밀번호 형식으로 입력해주세요");
+            throw new IllegalArgumentException();
         }
-       return Member.builder()
+        return Member.builder()
                 .email(memberDto.getEmail())
                 .password(encoder.encode(memberDto.getPassword()))
                 .name(memberDto.getName())
@@ -107,6 +111,19 @@ public class Member extends Auditing {
                 .birth(memberDto.getBirth())
                 .phone(memberDto.getPhone())
                 .build();
+    }
+
+    public MemberDeleteDto deleteMember(String email){
+        this.isMember = NO;
+        return MemberDeleteDto.builder().email(email).isMember(NO).build();
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public void updatePhone(String phone) {
+        this.phone = phone;
     }
 
 }
