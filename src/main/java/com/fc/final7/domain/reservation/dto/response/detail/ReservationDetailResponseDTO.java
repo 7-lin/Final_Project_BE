@@ -25,6 +25,7 @@ public class ReservationDetailResponseDTO {
     private String name;
     private String phone;
     private String email;
+    private String reservationCode;
 
     public ReservationDetailResponseDTO(Reservation reservation) {
         reservationId = reservation.getId();
@@ -35,5 +36,6 @@ public class ReservationDetailResponseDTO {
         name = reservation.getName();
         phone = reservation.getPhone();
         email = reservation.getEmail();
+        reservationCode = reservation.getReservationCode();
     }
 }
