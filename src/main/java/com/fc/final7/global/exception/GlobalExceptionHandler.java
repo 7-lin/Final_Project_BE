@@ -113,4 +113,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(NoSearchReservationException.class)
+    protected ResponseEntity<ErrorResponse> handleNoSearchReservationException(NoSearchReservationException e) {
+        log.error(e.getMessage(), e.getStackTrace());
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.RESERVATION_NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
 }
