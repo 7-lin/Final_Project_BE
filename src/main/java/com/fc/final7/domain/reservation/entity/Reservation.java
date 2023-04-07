@@ -64,4 +64,9 @@ public class Reservation extends Auditing {
 
     @Column(name = "reservation_code", columnDefinition = "VARCHAR(40)")
     private String reservationCode;
+
+    //예약 취소 메서드
+    public void cancelReservation(Status status) {
+        this.status = status;
+    }
 }
