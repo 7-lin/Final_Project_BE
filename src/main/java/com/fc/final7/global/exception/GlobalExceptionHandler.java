@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EXIST_MEMBER.class)
     protected ResponseEntity<ErrorResponse> handleDuplicateEmailException(EXIST_MEMBER e){
-        log.error("handleDuplicateEmailException", e);
+        log.error("handleDuplicateEmailOrPhoneException", e);
         ErrorResponse response = ErrorResponse.of(ErrorCode.EXIST_MEMBER);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
