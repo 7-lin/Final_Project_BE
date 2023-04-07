@@ -1,5 +1,6 @@
 package com.fc.final7.domain.reservation.service;
 
+import com.fc.final7.domain.reservation.dto.request.ReservationCheckRequestDTO;
 import com.fc.final7.domain.reservation.dto.request.ReservationRequestDTO;
 import com.fc.final7.domain.reservation.dto.response.ReservationResponseDTO;
 import com.fc.final7.domain.reservation.dto.response.detail.ReservationDetailResponseDTO;
@@ -13,4 +14,8 @@ public interface ReservationService {
     List<ReservationResponseDTO> reservationInquiryByMember(String header);
 
     ReservationDetailResponseDTO reservationDetail(Long reservationId, String header);
+
+    ReservationDetailResponseDTO reservationCheck(ReservationCheckRequestDTO requestDTO);
+
+    String cancelReservation(String reservationCode);
 }
