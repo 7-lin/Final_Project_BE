@@ -1,5 +1,7 @@
 package com.fc.final7.domain.reservation.controller;
 
+import com.fc.final7.domain.reservation.dto.request.ReservationCheckRequestDTO;
+import com.fc.final7.domain.reservation.dto.request.ReservationCodeRequestDTO;
 import com.fc.final7.domain.reservation.dto.request.ReservationRequestDTO;
 import com.fc.final7.domain.reservation.dto.response.ReservationResponseDTO;
 import com.fc.final7.domain.reservation.dto.response.detail.ReservationDetailResponseDTO;
@@ -43,5 +45,20 @@ public class ReservationController {
         String header = request.getHeader(AUTHORIZATION);
         ReservationDetailResponseDTO responseDTO = reservationService.reservationDetail(reservationId, header);
         return BaseResponse.of(1, "성공", responseDTO);
+    }
+
+    //예약 단건 조회 (예약번호 + 연락처로) 조회하는 메서드
+    @PostMapping("/reservation/check")
+    public BaseResponse<ReservationDetailResponseDTO> reservationCheck(@RequestBody ReservationCheckRequestDTO requestDTO) {
+        ReservationDetailResponseDTO responseDTO = reservationService.reservationCheck(requestDTO);
+        return BaseResponse.of(1, "성공", responseDTO);
+    }
+
+    //예약 취소 메서드
+    @DeleteMapping("/reservation")
+    public BaseResponse<String> cancelReservation(@RequestBody ReservationCodeRequestDTO requestDTO) {
+        String reservationCode = requestDTO.getReservationCode();
+        String response = reservationService.cancelReservation(reservationCode);
+        return BaseResponse.of(1, "성공", response);
     }
 }
