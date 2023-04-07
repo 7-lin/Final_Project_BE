@@ -139,7 +139,7 @@ public class MemberController {
     @PostMapping("/sendEmail")
     public BaseResponse<MailDto> sendPasswordMail(@RequestParam String email, @RequestParam String phone) throws MessagingException {
         MailDto mail = smtpEmailService.createMail(email, phone);
-        smtpEmailService.sendTemporaryPasswordMail(mail);
+
         return BaseResponse.of(1, "임시 비밀번호를 발송했습니다.", mail);
     }
 
@@ -158,20 +158,7 @@ public class MemberController {
 //        return BaseResponse.of(1, "로그아웃이 완료되었습니다.", responseEntity);
 //    }
 
-//        @PostMapping("/logout")
-//    public BaseResponse<ResponseEntity<?>> logout(@RequestHeader("Authorization") String requestAccessToken, @RequestParam String email) {
-//        memberService.logout(requestAccessToken, email);
-//        ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
-//                .maxAge(0)
-//                .path("/")
-//                .build();
-//
-//        ResponseEntity<Object> responseEntity = ResponseEntity
-//                .status(HttpStatus.OK)
-//                .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-//                .build();
-//        return BaseResponse.of(1, "로그아웃이 완료되었습니다.", responseEntity);
-//    }
+
 
     @PostMapping("/auth/logout")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws Exception {

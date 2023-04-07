@@ -76,7 +76,7 @@ public class MemberService {
 //                    .authenticate(authenticationToken);
 //
 //            SecurityContextHolder.getContext().setAuthentication(authentication);
-            TokenDto tokenDto = jwtProvider.generateToken(member.getName(), "ROLE_MEMBER");
+            TokenDto tokenDto = jwtProvider.generateToken(member.getEmail(), "ROLE_MEMBER");
 
             return MemberResponseDtoInToken.builder()
                     .tokenDto(tokenDto)
@@ -92,25 +92,13 @@ public class MemberService {
         }
     }
 
-    //    @Transactional
-//    public TokenDto login(MemberLoginDto loginDto) {
-//
-//        UsernamePasswordAuthenticationToken authenticationToken =
-//                new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
-//
-//        Authentication authentication = authenticationManagerBuilder.getObject()
-//                .authenticate(authenticationToken);
-//        SecurityContextHolder.getContext().setAuthentication(authentication);
-//
-//        return jwtProvider.generateToken(authentication.getName(), jwtProvider.getAuthorities(authentication));
-//    }
     @Transactional
     public MemberUpdateResponseDto updateMember(MemberUpdateDto updateDto, String email, String requestAccessTokenInHeader) {
 
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
 //        String refreshTokenIdRedis = redisService.getValues("RT : " + member.getEmail());
 //
-//        if (jwtProvider.validate(requestAccessTokenInHeader)){
+//        if (!jwtProvider.validate(requestAccessTokenInHeader)){    !를 붙이면 validate로직을 타긴 하는데 이후에 작동을 안한다
 //            jwtProvider.reissue(requestAccessTokenInHeader, refreshTokenIdRedis);
 //        }else {
 //            throw new TokenExpirationException();
@@ -120,36 +108,41 @@ public class MemberService {
             if (updateDto.getNewPassword().equals(updateDto.getValidNewPassword())) {
                 member.updatePassword(encoder.encode(updateDto.getNewPassword()));
                 member.updatePhone(member.getPhone());
+
             } else {
                 throw new PasswordNotMatchException();
             }
-        }
-        if (updateDto.getPhone() != null && updateDto.getNewPassword() == null && updateDto.getValidNewPassword() == null) {
+        } else if (updateDto.getPhone() != null && updateDto.getNewPassword() == null && updateDto.getValidNewPassword() == null) {
             member.updatePhone(updateDto.getPhone());
-            member.updatePassword(encoder.encode(member.getPassword()));
-        }
-        if (updateDto.getPhone() != null && updateDto.getNewPassword() != null && updateDto.getValidNewPassword() != null) {
+        } else if (updateDto.getPhone() != null && updateDto.getNewPassword() != null && updateDto.getValidNewPassword() != null) {
             if (updateDto.getNewPassword().equals(updateDto.getValidNewPassword())) {
                 member.updatePassword(encoder.encode(updateDto.getNewPassword()));
                 member.updatePhone(updateDto.getPhone());
+            } else {
+                throw new PasswordNotMatchException();
             }
+        } else if (updateDto.getPhone() == null && updateDto.getNewPassword() == null && updateDto.getValidNewPassword() == null) {
+           return MemberUpdateResponseDto.builder()
+                   .password(encoder.encode(member.getPassword()))
+                   .phone(member.getPhone())
+                   .build();
         }
-        memberRepository.save(member);
+        Member savedMember = memberRepository.save(member);
         return MemberUpdateResponseDto.builder()
-                .password(updateDto.getNewPassword())
-                .phone(updateDto.getPhone())
+                .password(savedMember.getPassword())
+                .phone(savedMember.getPhone())
                 .build();
     }
 
     public MemberResponseDto getMemberInformation(String email, String requestAccessTokenInHeader) {
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
-//        String refreshTokenIdRedis = redisService.getValues("RT : " + member.getEmail());
-//
-//        if (jwtProvider.validate(requestAccessTokenInHeader)){
-//            jwtProvider.reissue(requestAccessTokenInHeader, refreshTokenIdRedis);
-//        }else {
-//            throw new TokenExpirationException();
-//        }
+        String refreshTokenIdRedis = redisService.getValues("RT : " + member.getEmail());
+
+        if (!jwtProvider.validate(requestAccessTokenInHeader)){
+            jwtProvider.reissue(requestAccessTokenInHeader, refreshTokenIdRedis);
+        }else {
+            throw new TokenExpirationException();
+        }
 
         return from(member);
     }
