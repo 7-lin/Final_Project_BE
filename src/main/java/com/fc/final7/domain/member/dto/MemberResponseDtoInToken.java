@@ -2,15 +2,13 @@ package com.fc.final7.domain.member.dto;
 
 import com.fc.final7.domain.jwt.dto.TokenDto;
 import com.fc.final7.domain.member.enums.Gender;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Builder
+@Setter
 public class MemberResponseDtoInToken {
 
     private String email;
