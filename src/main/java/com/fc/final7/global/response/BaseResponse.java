@@ -1,10 +1,12 @@
 package com.fc.final7.global.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.OK;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @Getter
 @Setter
