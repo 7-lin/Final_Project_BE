@@ -6,4 +6,6 @@ public interface WishlistService {
 
     String createWishlist(WishlistRequestDTO wishlistRequestDTO, String accessToken);
 
+    String deleteWishlist(WishlistRequestDTO wishlistRequestDTO, String accessToken);
+
 }
