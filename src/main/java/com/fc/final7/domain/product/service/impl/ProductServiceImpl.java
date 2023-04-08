@@ -10,6 +10,7 @@ import com.fc.final7.domain.product.entity.Product;
 import com.fc.final7.domain.product.repository.datajpa.CategoryRepository;
 import com.fc.final7.domain.product.repository.datajpa.ProductRepository;
 import com.fc.final7.domain.product.service.ProductService;
+import com.fc.final7.domain.review.entity.Posting;
 import com.fc.final7.domain.review.repository.ReviewRepository;
 import com.fc.final7.global.exception.NoSearchProductException;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +55,8 @@ public class ProductServiceImpl implements ProductService{
     // 상품 클릭시 해당 상품의 최신리뷰 3개를 반환하는 메서드
     @Override
     public List<ReviewResponseDTO> selectProductDetailInReviews(Long productId, Pageable pageable) {
-        return reviewRepository.selectProductDetailReviews(productId, pageable)
+        Posting posting = Posting.POSTING;
+        return reviewRepository.selectProductDetailReviews(productId, posting, pageable)
                 .stream()
                 .map(ReviewResponseDTO::new)
                 .collect(Collectors.toList());
