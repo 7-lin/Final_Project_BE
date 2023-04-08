@@ -27,19 +27,17 @@ public class BaseResponse<T> {
         this.data = data;
     }
 
-    public BaseResponse(String message, Integer dataSize, T data, T response) {
+    public BaseResponse(String message, Integer dataSize) {
         this.httpStatus = OK;
         this.message = message;
         this.dataSize = dataSize;
-        this.data = data;
-        this.response = response;
     }
 
     public static <T>BaseResponse<T> of(Integer dataSize, String message, T data){
         return new BaseResponse<>(dataSize, message, data);
     }
 
-    public static <T> BaseResponse<T> ofToken(String message, Integer dataSize, T data, T response){
-        return new BaseResponse<>(message, dataSize, data, response);
+    public static <T> BaseResponse<T> of(String message, Integer dataSize){
+        return new BaseResponse<>(message, dataSize);
     }
 }
