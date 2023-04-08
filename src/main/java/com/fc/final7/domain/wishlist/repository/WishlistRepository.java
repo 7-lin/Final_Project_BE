@@ -10,7 +10,6 @@ import java.util.Optional;
 
 public interface WishlistRepository extends JpaRepository<Wishlist, Long> {
 
-//    @Query("select w from wishlist w where w.")
     Optional<Wishlist> findByMemberAndProduct(Member member, Product Product);
 
 }
