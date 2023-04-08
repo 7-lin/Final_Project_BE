@@ -2,7 +2,6 @@ package com.fc.final7.domain.member.controller;
 
 import com.fc.final7.domain.jwt.JwtProperties;
 import com.fc.final7.domain.jwt.JwtProvider;
-import com.fc.final7.domain.jwt.dto.TokenDto;
 import com.fc.final7.domain.member.dto.*;
 import com.fc.final7.domain.member.service.MemberService;
 import com.fc.final7.domain.member.service.SmtpEmailService;
@@ -88,8 +87,13 @@ public class MemberController {
         return memberService.checkDuplicationPhone(requestDto);
     }
 
+    @PostMapping("/member/update/checkPhone")
+    public boolean checkDuplicationPhone(@RequestBody String phone){
+        return memberService.checkDuplicationPhoneUpdate(phone);
+    }
+
     @PostMapping("/login")
-    public BaseResponse<Object> login(@RequestBody MemberLoginDto loginDto) {
+    public ResponseEntity<?> login(@RequestBody MemberLoginDto loginDto) {
         MemberResponseDtoInToken memberResponseDtoInToken = memberService.login(loginDto);
 
         HttpCookie httpCookie = ResponseCookie.from("refresh-token", memberResponseDtoInToken.getTokenDto().getRefreshToken())
@@ -98,12 +102,14 @@ public class MemberController {
                 .secure(true)
                 .build();
 
-        ResponseEntity<Object> responseEntity = ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, httpCookie.toString())
+        ResponseEntity<MemberResponseDtoInToken> response = ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, httpCookie.toString())  // RT 저장
                 // AT 저장
                 .header(HttpHeaders.AUTHORIZATION, jwtProperties.getTokenPrefix() + memberResponseDtoInToken.getTokenDto().getAccessToken())
-                .build();
-        return BaseResponse.ofToken("로그인에 성공했습니다", 1, responseEntity, memberResponseDtoInToken);
+                .header(HttpHeaders.EXPIRES, jwtProperties.getAccessTokenValidTime().toString())
+                .body(memberResponseDtoInToken);
+        return  response;
+//
     }
 
     @PutMapping("/member/update")
@@ -111,15 +117,15 @@ public class MemberController {
                                              @RequestParam String email,
                                              @RequestHeader("Authorization") String requestAccessToken) {
 
-        MemberUpdateResponseDto memberUpdateResponseDto = memberService.updateMember(updateDto, email, requestAccessToken);
-        return BaseResponse.of(1, "회원정보를 수정했습니다.", memberUpdateResponseDto);
+        memberService.updateMember(updateDto, email, requestAccessToken);
+        return BaseResponse.of("회원정보 수정에 성공했습니다", 1);
     }
 
     @GetMapping("/member")
     public BaseResponse<Object> MemberInfo(@RequestParam String email,
                                            @RequestHeader("Authorization") String requestAccessToken) {
         MemberResponseDto memberResponseDto = memberService.getMemberInformation(email, requestAccessToken);
-        return BaseResponse.of(1,"회원정보를 조회합니다.", memberResponseDto);
+        return BaseResponse.of(1, "회원정보를 조회합니다.", memberResponseDto);
     }
 
     @GetMapping("/findId")
@@ -131,8 +137,8 @@ public class MemberController {
     @PutMapping("/deleteMember")
     public BaseResponse<Object> deleteMember(@RequestParam String email,
                                              @RequestHeader("Authorization") String requestAccessToken) {
-        MemberDeleteDto memberDeleteDto = memberService.deleteMember(email,requestAccessToken);
-        return BaseResponse.of( 1, "아이디를 삭제합니다.", memberDeleteDto);
+        MemberDeleteDto memberDeleteDto = memberService.deleteMember(email, requestAccessToken);
+        return BaseResponse.of(1, "아이디를 삭제합니다.", memberDeleteDto);
     }
 
 
@@ -143,21 +149,19 @@ public class MemberController {
         return BaseResponse.of(1, "임시 비밀번호를 발송했습니다.", mail);
     }
 
-//    @PostMapping("/logout")
-//    public BaseResponse<ResponseEntity<?>> logout(@RequestHeader("Authorization") String requestAccessToken, @RequestParam String email) {
-//        memberService.logout(requestAccessToken, email);
-//        ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
-//                .maxAge(0)
-//                .path("/")
-//                .build();
-//
-//        ResponseEntity<Object> responseEntity = ResponseEntity
-//                .status(HttpStatus.OK)
-//                .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-//                .build();
-//        return BaseResponse.of(1, "로그아웃이 완료되었습니다.", responseEntity);
-//    }
+    @PostMapping("/logouts")
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String requestAccessToken) {
+        memberService.logout(requestAccessToken);
+        ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
+                .maxAge(0)
+                .path("/")
+                .build();
 
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set(HttpHeaders.SET_COOKIE,  responseCookie.toString());
+
+        return new ResponseEntity<>("로그아웃이 완료되었습니다.", httpHeaders, HttpStatus.OK);
+    }
 
 
     @PostMapping("/auth/logout")

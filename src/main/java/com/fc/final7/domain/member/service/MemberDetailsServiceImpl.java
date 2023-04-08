@@ -14,7 +14,6 @@ import javax.persistence.EntityNotFoundException;
 @RequiredArgsConstructor
 public class MemberDetailsServiceImpl implements UserDetailsService {
     private final MemberRepository memberRepository;
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);

@@ -28,16 +28,17 @@ public class SmtpEmailService {
         String uuid = "";
         Member member = memberRepository.findByEmailAndPhone(email, phone).orElseThrow(EntityNotFoundException::new);
 
-        MailDto mailDto = new MailDto();
-        mailDto.setEmail(member.getEmail());
-        mailDto.setTitle("goTogether 임시비밀번호 안내 이메일 입니다.");
-        mailDto.setMessage("goTogether 임시비밀번호 안내 이메일 입니다. 회원님의 임시 비밀번호는 " + uuid + "입니다. 로그인 후 반드시 비밀번호를 변경해주세요");
 
         if (member != null) {
             uuid = resetPassword(member);
+            MailDto mailDto = new MailDto();
 
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, false); // false로 설정하면 단순 text메시지로 전달
+
+            mailDto.setEmail(member.getEmail());
+            mailDto.setTitle("goTogether 임시비밀번호 안내 이메일 입니다.");
+            mailDto.setMessage("goTogether 임시비밀번호 안내 이메일 입니다. 회원님의 임시 비밀번호는 " + uuid + "입니다. 로그인 후 반드시 비밀번호를 변경해주세요");
 
             messageHelper.setTo(mailDto.getEmail());
             messageHelper.setSubject(mailDto.getTitle());

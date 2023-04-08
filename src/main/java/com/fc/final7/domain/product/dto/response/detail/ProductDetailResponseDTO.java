@@ -1,6 +1,8 @@
 package com.fc.final7.domain.product.dto.response.detail;
 
+import com.fc.final7.domain.product.entity.Category;
 import com.fc.final7.domain.product.entity.Product;
+import com.fc.final7.domain.product.entity.ProductOption;
 import lombok.*;
 
 import java.util.ArrayList;
@@ -24,15 +26,16 @@ public class ProductDetailResponseDTO {
     private String feature;
     private String flight;
     private List<ProductPeriodDTO> period = new ArrayList<>();
-    private List<ProductContentDTO> contents = new ArrayList<>();
     private List<ProductOptionDTO> options = new ArrayList<>();
+    private List<CategoryDTO> categories = new ArrayList<>();
+    private List<ProductContentDTO> contents = new ArrayList<>();
 
-    public ProductDetailResponseDTO toDTO(Product product) {
+    public ProductDetailResponseDTO toDTO(Product product, List<Category> categories, List<ProductOption> options) {
         this.productId = product.getId();
         this.thumbnail = product.getThumbnail();
         this.productName = product.getTitle();
         this.price = product.getPrice();
-        this.briefExplanation = product.getDescription();
+        this.briefExplanation = product.getDescription().replace("\n", "</br>").replace("\r", "");
         this.region = product.getRegion();
         this.feature = product.getFeature();
         this.flight = product.getFlight();
@@ -50,8 +53,9 @@ public class ProductDetailResponseDTO {
                 .sorted(Comparator.comparing(ProductContentDTO::getPriority))
                 .collect(Collectors.toList());
 
-        this.options = product.getOptions().stream()
-                .map(ProductOptionDTO::new).collect(Collectors.toList());
+        this.options = options.stream().map(ProductOptionDTO::new).collect(Collectors.toList());
+
+        this.categories = categories.stream().map(CategoryDTO::new).collect(Collectors.toList());
         return this;
     }
 }

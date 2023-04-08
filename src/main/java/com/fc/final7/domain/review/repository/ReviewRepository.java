@@ -18,8 +18,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // pageable 인터페이스는 limit 3 을 걸기 위한 용도임
     @Query(value = "select r from Review r" +
             " where r.product.id = :productId" +
+            " and r.posting = :posting" +
             " order by r.createdDate desc")
-    List<Review> selectProductDetailReviews(@Param("productId") Long productId, Pageable pageable);
+    List<Review> selectProductDetailReviews(@Param("productId") Long productId, @Param("posting") Posting posting, Pageable pageable);
 
     @Modifying
     @Query("update Review r set r.viewCount=r.viewCount+1 WHERE r.id=:reviewId")

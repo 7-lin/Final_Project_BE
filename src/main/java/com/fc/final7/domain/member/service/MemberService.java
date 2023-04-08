@@ -18,7 +18,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -65,7 +64,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(loginDto.getEmail()).orElseThrow(EntityNotFoundException::new);
 
         if (member.getIsMember() == IsMember.NO) {
-            throw new EntityNotFoundException();
+            throw new EntityNotFoundException();      // 탈퇴한 회원일떄
         }
 
         if (encoder.matches(loginDto.getPassword(), member.getPassword())) {
@@ -77,6 +76,15 @@ public class MemberService {
 //
 //            SecurityContextHolder.getContext().setAuthentication(authentication);
             TokenDto tokenDto = jwtProvider.generateToken(member.getEmail(), "ROLE_MEMBER");
+
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword());
+
+            Authentication authentication = authenticationManagerBuilder.getObject()
+                    .authenticate(authenticationToken);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
 
             return MemberResponseDtoInToken.builder()
                     .tokenDto(tokenDto)
@@ -95,10 +103,11 @@ public class MemberService {
     @Transactional
     public MemberUpdateResponseDto updateMember(MemberUpdateDto updateDto, String email, String requestAccessTokenInHeader) {
 
+
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
 //        String refreshTokenIdRedis = redisService.getValues("RT : " + member.getEmail());
-//
-//        if (!jwtProvider.validate(requestAccessTokenInHeader)){    !를 붙이면 validate로직을 타긴 하는데 이후에 작동을 안한다
+
+//        if (!jwtProvider.validate(requestAccessTokenInHeader)){
 //            jwtProvider.reissue(requestAccessTokenInHeader, refreshTokenIdRedis);
 //        }else {
 //            throw new TokenExpirationException();
@@ -113,9 +122,15 @@ public class MemberService {
                 throw new PasswordNotMatchException();
             }
         } else if (updateDto.getPhone() != null && updateDto.getNewPassword() == null && updateDto.getValidNewPassword() == null) {
+            if (checkDuplicationPhoneUpdate(updateDto.getPhone())) {
+                throw new EXIST_MEMBER();
+            }
             member.updatePhone(updateDto.getPhone());
         } else if (updateDto.getPhone() != null && updateDto.getNewPassword() != null && updateDto.getValidNewPassword() != null) {
             if (updateDto.getNewPassword().equals(updateDto.getValidNewPassword())) {
+                if (checkDuplicationPhoneUpdate(updateDto.getPhone())) {
+                    throw new EXIST_MEMBER();
+                }
                 member.updatePassword(encoder.encode(updateDto.getNewPassword()));
                 member.updatePhone(updateDto.getPhone());
             } else {
@@ -138,7 +153,7 @@ public class MemberService {
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
         String refreshTokenIdRedis = redisService.getValues("RT : " + member.getEmail());
 
-        if (!jwtProvider.validate(requestAccessTokenInHeader)){
+        if (jwtProvider.validate(requestAccessTokenInHeader)){
             jwtProvider.reissue(requestAccessTokenInHeader, refreshTokenIdRedis);
         }else {
             throw new TokenExpirationException();
@@ -151,33 +166,33 @@ public class MemberService {
     @Transactional
     public MemberDeleteDto deleteMember(String email, String requestAccessTokenInHeader) {  // 회원탈퇴
         Member member = memberRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
-//
-//        if (!jwtProvider.validate(requestAccessTokenInHeader)) {
-//            throw new TokenExpirationException();
-//        }
-//        String refreshTokenIdRedis = redisService.getValues("RT : " + member.getEmail());
-//        redisService.deleteValues(refreshTokenIdRedis);
-//        redisService.deleteValues("AT : " + member.getEmail());
+
+        if (jwtProvider.validate(requestAccessTokenInHeader)) {
+            throw new TokenExpirationException();
+        }
+        String refreshTokenIdRedis = redisService.getValues("RT : " + member.getEmail());
+        redisService.deleteValues(refreshTokenIdRedis);
+        redisService.deleteValues("AT : " + member.getEmail());
 
 //        memberRepository.delete(member);  // 회원정보 DB에서 삭제
         return member.deleteMember(email);
     }
 
-//    @Transactional
-//    public void logout(String requestAccessTokenInHeader, String email) {
-//        String requestAccessToken = jwtProvider.resolveToken(requestAccessTokenInHeader);
-//        String principal = jwtProvider.getPrincipal(requestAccessToken);
-//
-//        // Redis에 저장되어 있는 RT 삭제
-//        String refreshTokenInRedis = redisService.getValues("RT :" + principal);
-//        if (refreshTokenInRedis != null) {
-//            redisService.deleteValues("RT :" + principal);
-//        }
-//
-//        // Redis에 로그아웃 처리한 AT 저장
-//        long expiration = jwtProvider.getTokenExpirationTime(requestAccessToken) - new Date().getTime();
-//        redisService.setValuesWithTimeout(requestAccessToken, "logout", expiration, TimeUnit.SECONDS);
-//    }
+    @Transactional
+    public void logout(String requestAccessTokenInHeader) {
+        String requestAccessToken = jwtProvider.resolveToken(requestAccessTokenInHeader);
+        String principal = jwtProvider.getPrincipal(requestAccessToken);
+
+        // Redis에 저장되어 있는 RT 삭제
+        String refreshTokenInRedis = redisService.getValues("RT :" + principal);
+        if (refreshTokenInRedis != null) {
+            redisService.deleteValues("RT :" + principal);
+        }
+
+        // Redis에 로그아웃 처리한 AT 저장
+        long expiration = jwtProvider.getTokenExpirationTime(requestAccessToken) - new Date().getTime();
+        redisService.setValuesWithTimeout(requestAccessToken, "logout", expiration, TimeUnit.SECONDS);
+    }
 
 
     public MemberResponseDto from(Member member) {
@@ -202,6 +217,10 @@ public class MemberService {
 
     public boolean checkDuplicationPhone(SignUpRequestDto requestDto) {
         return memberRepository.existsByPhone(requestDto.getPhone());
+    }
+
+    public boolean checkDuplicationPhoneUpdate(String phone) {
+        return memberRepository.existsByPhone(phone);
     }
 
     public static final Pattern isEmail = Pattern.compile("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$");
