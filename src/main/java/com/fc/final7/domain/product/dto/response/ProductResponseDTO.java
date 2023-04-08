@@ -25,7 +25,7 @@ public class ProductResponseDTO {
         thumbnail = product.getThumbnail();
         productName = product.getTitle();
         productPrice = product.getPrice();
-        briefExplanation = product.getDescription().replace("\n", "</br>");
+        briefExplanation = product.getDescription().replace("\n", "</br>").replace("\r", "");
         period = product.getTerm();
     }
 
