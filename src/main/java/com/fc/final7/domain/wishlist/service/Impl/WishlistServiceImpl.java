@@ -64,4 +64,15 @@ public class WishlistServiceImpl implements WishlistService {
                 .collect(Collectors.toList());
 
     }
+
+    @Override
+    public String deleteAllWishlist(String accessToken) {
+
+        String email = jwtProvider.getClaimsFromToken(accessToken).get("email", String.class);
+        Member member = memberRepository.findByEmail(email).get();
+
+        wishlistRepository.deleteAllByMember(member);
+
+        return "success";
+    }
 }
