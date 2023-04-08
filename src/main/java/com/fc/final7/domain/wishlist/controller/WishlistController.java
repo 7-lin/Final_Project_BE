@@ -6,6 +6,7 @@ import com.fc.final7.domain.wishlist.service.WishlistService;
 import com.fc.final7.global.response.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,5 +26,14 @@ public class WishlistController {
         String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
 
         return BaseResponse.of(0, wishlistService.createWishlist(wishlistRequestDTO, accessToken), null);
+    }
+
+    @DeleteMapping("/wishlist")
+    public BaseResponse<Null> doDeleteWishlist(@RequestBody WishlistRequestDTO wishlistRequestDTO,
+                                               HttpServletRequest request) {
+
+        String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
+
+        return BaseResponse.of(0, wishlistService.deleteWishlist(wishlistRequestDTO, accessToken), null);
     }
 }
