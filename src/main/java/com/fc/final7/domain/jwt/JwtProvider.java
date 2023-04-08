@@ -36,8 +36,7 @@ public class JwtProvider {
     private final MemberRepository memberRepository;
 
     private static final String EMAIL_KEY = "email";
-    private static final String AUTHORITIES_KEY = "role";
-    private static final String url = "https://localhost:8080";
+    private static final String AUTHORITIES_KEY = "ROLE";
 
 
     public TokenDto createToken(String email, String authorities) {
@@ -79,8 +78,8 @@ public class JwtProvider {
         String requestAccessToken = resolveToken(requestAccessTokenInHeader);
 
         Authentication authentication = getAuthentication(requestAccessToken);
-        String principal = getPrincipal(requestAccessToken);
-
+        String principal = getPrincipal(requestAccessToken);  // 이메일 필요
+//        String email = getAuthentication(requestAccessToken);
         String refreshTokenInRedis = redisService.getValues("RT : " + principal);
         if (refreshTokenInRedis == null) { // Redis에 저장되어 있는 RT가 없을 경우
             return null; // -> 재로그인 요청
@@ -104,7 +103,7 @@ public class JwtProvider {
 
     public boolean validate(String requestAccessTokenInHeader) {
         String requestAccessToken = resolveToken(requestAccessTokenInHeader);
-        return validateAccessToken(requestAccessTokenInHeader); // true = 재발급
+        return validateAccessToken(requestAccessToken); // true = 재발급
     }
 
     // "Bearer {AT}"에서 {AT} 추출
@@ -180,7 +179,6 @@ public class JwtProvider {
         return String.valueOf(getClaimsFromToken(token).getExpiration());
     }
 
-
     public Authentication getAuthentication(String token) {
         String email = getClaimsFromToken(token).get(EMAIL_KEY).toString();
         UserDetails userDetails = memberDetailsService.loadUserByUsername(email);
@@ -188,7 +186,6 @@ public class JwtProvider {
     }
 
     public String getPrincipal(String requestAccessToken) {
-//        return email;
         return getAuthentication(requestAccessToken).getPrincipal().toString();
     }
 
