@@ -1,6 +1,7 @@
 package com.fc.final7.domain.member.service;
 
 import com.fc.final7.domain.member.entity.Member;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,10 +9,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 
+
 public class MemberDetailImpl implements UserDetails {
 
     private final Member member;
 
+    @Autowired
     public MemberDetailImpl(Member member) {
         this.member = member;
     }
@@ -25,7 +28,7 @@ public class MemberDetailImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return member.getPassword();
     }
 
     @Override
@@ -35,21 +38,25 @@ public class MemberDetailImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
+    }
+
+    public void setEncodedPass(String encodedPass) {
+        member.updatePassword(encodedPass);
     }
 }

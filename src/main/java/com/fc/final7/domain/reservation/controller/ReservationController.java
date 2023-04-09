@@ -61,4 +61,12 @@ public class ReservationController {
         String response = reservationService.cancelReservation(reservationCode);
         return BaseResponse.of(1, "성공", response);
     }
+
+    //취소된 예약 다시 되돌리는 메서드
+    @PostMapping("/reservation/undo")
+    public BaseResponse<String> undoReservation(@RequestBody ReservationCodeRequestDTO requestDTO) {
+        String reservationCode = requestDTO.getReservationCode();
+        String response = reservationService.undoReservation(reservationCode);
+        return BaseResponse.of(1,"성공", response);
+    }
 }

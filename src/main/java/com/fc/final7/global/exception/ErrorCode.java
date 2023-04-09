@@ -15,7 +15,8 @@ public enum ErrorCode{
     ENTITY_NOT_FOUND(404, "ENTITY_NOT_FOUND", "해당하는 아이디가 존재하지 않습니다"),
     INTERNAL_SERVER_ERROR(500, "SERVER-ERROR", "Server Error"),
     NULL_OR_TYPE_MISS_MATCH(400, "NULL_OR_TYPE_MISS_MATCH", "파라미터가 null 이거나 타입이 맞지 않습니다."),
-    NULL_ACCESS_REFRESH_TOKEN(401, "Unauthorized", "토큰 기간이 만료되었습니다."),
+    NULL_ACCESS_REFRESH_TOKEN(401, "Unauthorized", "로그아웃 되었습니다"),
+    NULL_ACCESS_NOT_LOGIN(401, "Unauthorized", "로그인 후에 사용가능합니다."),
     NULL_POINTER_EXCEPTION(500, "NULL_POINTER", "NULL_POINTER_EXCEPTION 오류"),
 
     PRODUCT_NOT_FOUND(404, "PRODUCT-001", "존재하지 않는 상품입니다."),
