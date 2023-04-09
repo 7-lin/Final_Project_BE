@@ -66,7 +66,7 @@ public class Reservation extends Auditing {
     private String reservationCode;
 
     //예약 취소 메서드
-    public void cancelReservation(Status status) {
+    public void changeState(Status status) {
         this.status = status;
     }
 }
