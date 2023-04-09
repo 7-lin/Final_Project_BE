@@ -16,7 +16,6 @@ import com.fc.final7.domain.reservation.dto.response.detail.ReservationDetailRes
 import com.fc.final7.domain.reservation.entity.Reservation;
 import com.fc.final7.domain.reservation.entity.ReservationOption;
 import com.fc.final7.domain.reservation.entity.ReservationPeriod;
-import com.fc.final7.domain.reservation.entity.Status;
 import com.fc.final7.domain.reservation.repository.ReservationOptionRepository;
 import com.fc.final7.domain.reservation.repository.ReservationPeriodRepository;
 import com.fc.final7.domain.reservation.repository.ReservationRepository;
@@ -32,6 +31,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
+import static com.fc.final7.domain.reservation.entity.Status.CANCEL;
 import static com.fc.final7.domain.reservation.entity.Status.WAITING;
 import static java.time.LocalDateTime.now;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
@@ -189,7 +189,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         //이미 취소된 예약일 경우
-        if(reservation.getStatus().equals(Status.CANCEL)) {
+        if(reservation.getStatus().equals(CANCEL)) {
             throw new NoSearchReservationException();
         }
         return new ReservationDetailResponseDTO(reservation);
@@ -202,10 +202,22 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationRepository
                 .findReservationByReservationCode(reservationCode)
                 .orElseThrow(NoSearchReservationException::new);
-        if(reservation.getStatus().equals(Status.CANCEL)) {
+        if(reservation.getStatus().equals(CANCEL)) {
             return "이미 취소된 예약입니다.";
         }
-        reservation.cancelReservation(Status.CANCEL);
+        reservation.changeState(CANCEL);
         return "예약이 취소 되었습니다.";
+    }
+
+    @Override
+    public String undoReservation(String reservationCode) {
+        Reservation reservation = reservationRepository
+                .findReservationByReservationCode(reservationCode)
+                .orElseThrow(NoSearchReservationException::new);
+        if(reservation.getStatus().equals(WAITING)) {
+            return "취소 할 수 없습니다.";
+        }
+        reservation.changeState(WAITING);
+        return "다시 예약 되었습니다." + reservation.getReservationCode();
     }
 }
