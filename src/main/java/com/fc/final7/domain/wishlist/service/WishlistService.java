@@ -14,4 +14,6 @@ public interface WishlistService {
     List<ProductResponseDTO> readWishlist(List<ProductResponseDTO> productResponseDTOList, String accessToken);
 
     String deleteAllWishlist(String accessToken);
+
+    List<ProductResponseDTO> readMyWishlist(String accessToken);
 }

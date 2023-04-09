@@ -75,4 +75,14 @@ public class WishlistServiceImpl implements WishlistService {
 
         return "success";
     }
+
+    @Override
+    public List<ProductResponseDTO> readMyWishlist(String accessToken) {
+        String email = jwtProvider.getClaimsFromToken(accessToken).get("email", String.class);
+        Member member = memberRepository.findByEmail(email).get();
+
+        return wishlistRepository.findAllByMember(member).stream()
+                .map(wishlist -> ProductResponseDTO.toTagList(wishlist.getProduct()))
+                .collect(Collectors.toList());
+    }
 }
