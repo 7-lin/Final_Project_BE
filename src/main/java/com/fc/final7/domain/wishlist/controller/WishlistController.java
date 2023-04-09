@@ -52,4 +52,13 @@ public class WishlistController {
 
         return BaseResponse.of(null, wishlistService.deleteAllWishlist(accessToken), null);
     }
+
+    @GetMapping("/mywishlist")
+    public BaseResponse<List<ProductResponseDTO>> doMyWishlist(HttpServletRequest request){
+        String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION).substring(7);
+
+        List<ProductResponseDTO> productResponseDTOList = wishlistService.readMyWishlist(accessToken);
+
+        return BaseResponse.of(productResponseDTOList.size(), "success", productResponseDTOList);
+    }
 }
