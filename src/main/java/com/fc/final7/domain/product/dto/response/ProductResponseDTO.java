@@ -1,8 +1,13 @@
 package com.fc.final7.domain.product.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fc.final7.domain.product.entity.Category;
 import com.fc.final7.domain.product.entity.Product;
 import lombok.*;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @AllArgsConstructor
@@ -18,7 +23,8 @@ public class ProductResponseDTO {
     private Long productPrice;
     private String briefExplanation;
     private Integer period;
-    private boolean wishlist;
+    private Boolean wishlist;
+    List<String> tagList;
 
     public ProductResponseDTO(Product product) {
         productId = product.getId();
@@ -29,8 +35,24 @@ public class ProductResponseDTO {
         period = product.getTerm();
     }
 
-    public static ProductResponseDTO toWishlist(ProductResponseDTO productResponseDTO, boolean wishlist){
+    public static ProductResponseDTO toWishlist(ProductResponseDTO productResponseDTO, boolean wishlist) {
         productResponseDTO.setWishlist(wishlist);
+
+        return productResponseDTO;
+    }
+
+    public static ProductResponseDTO toTagList(Product product) {
+        ProductResponseDTO productResponseDTO = ProductResponseDTO.builder()
+                .productId(product.getId())
+                .thumbnail(product.getThumbnail())
+                .productName(product.getTitle())
+                .productPrice(product.getPrice())
+                .tagList(product.getCategories().stream()
+                        .map(category -> Optional.ofNullable(category.getSubdivision())
+                                .orElseGet(() -> category.getMiddleCategory()))
+                        .collect(Collectors.toList())
+                )
+                .build();
 
         return productResponseDTO;
     }
