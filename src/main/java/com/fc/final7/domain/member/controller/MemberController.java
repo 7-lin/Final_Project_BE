@@ -2,6 +2,7 @@ package com.fc.final7.domain.member.controller;
 
 import com.fc.final7.domain.jwt.JwtProperties;
 import com.fc.final7.domain.jwt.JwtProvider;
+import com.fc.final7.domain.jwt.dto.TokenDto;
 import com.fc.final7.domain.member.dto.*;
 import com.fc.final7.domain.member.service.MemberService;
 import com.fc.final7.domain.member.service.SmtpEmailService;
@@ -37,39 +38,42 @@ public class MemberController {
         }
     }
 
-//    @PostMapping("/reissue")
-//    public ResponseEntity<?> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
-//                                     @RequestHeader("Authorization") String requestAccessToken,
-//                                     @RequestParam String email) {
-//
-//        TokenDto reissuedTokenDto = jwtProvider.reissue(requestAccessToken, requestRefreshToken);
-//
-//        if (reissuedTokenDto != null) { // 토큰 재발급 성공
-//            // RT 저장
-//            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", reissuedTokenDto.getRefreshToken())
-//                    .maxAge(jwtProperties.getRefreshTokenValidTime())
-//                    .httpOnly(true)
-//                    .secure(true)
-//                    .build();
-//            return ResponseEntity
-//                    .status(HttpStatus.OK)
-//                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-//                    // AT 저장
-//                    .header(HttpHeaders.AUTHORIZATION, jwtProperties.getTokenPrefix() + reissuedTokenDto.getAccessToken())
-//                    .build();
-//
-//        } else { // Refresh Token 탈취 가능성
-//            // Cookie 삭제 후 재로그인 유도
-//            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
-//                    .maxAge(0)
-//                    .path("/")
-//                    .build();
-//            return ResponseEntity
-//                    .status(HttpStatus.UNAUTHORIZED)
-//                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-//                    .build();
-//        }
-//    }
+
+
+    @PostMapping("/reissue")
+    public ResponseEntity<?> reissue(@CookieValue(name = "refresh-token") String requestRefreshToken,
+                                     @RequestHeader("Authorization") String requestAccessTokenInHeader) {
+
+        TokenDto reissuedTokenDto = jwtProvider.reissue(requestAccessTokenInHeader, requestRefreshToken);
+
+        if (reissuedTokenDto != null) { // 토큰 재발급 성공
+            // RT 저장
+            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", reissuedTokenDto.getRefreshToken())
+                    .maxAge(jwtProperties.getRefreshTokenValidTime())
+                    .httpOnly(true)
+                    .secure(true)
+                    .sameSite("None")
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                    // AT 저장
+                    .header(HttpHeaders.AUTHORIZATION, jwtProperties.getTokenPrefix() + reissuedTokenDto.getAccessToken())
+                    .build();
+
+        } else { // Refresh Token 탈취 가능성
+            // Cookie 삭제 후 재로그인 유도
+            ResponseCookie responseCookie = ResponseCookie.from("refresh-token", "")
+                    .maxAge(0)
+                    .path("/")
+                    .sameSite("None")
+                    .build();
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                    .build();
+        }
+    }
 
     @PostMapping("/signUp")
     public BaseResponse<MemberResponseDto> signUp(@Valid @RequestBody SignUpRequestDto requestDto) throws Exception {
@@ -100,6 +104,7 @@ public class MemberController {
                 .maxAge(jwtProperties.getRefreshTokenValidTime())
                 .httpOnly(true)
                 .secure(true)
+                .sameSite("None")
                 .build();
 
         ResponseEntity<MemberResponseDtoInToken> response = ResponseEntity.ok()
@@ -114,17 +119,15 @@ public class MemberController {
 
     @PutMapping("/member/update")
     public BaseResponse<Object> updateMember(@RequestBody MemberUpdateDto updateDto,
-                                             @RequestParam String email,
                                              @RequestHeader("Authorization") String requestAccessToken) {
 
-        memberService.updateMember(updateDto, email, requestAccessToken);
+        memberService.updateMember(updateDto, requestAccessToken);
         return BaseResponse.of("회원정보 수정에 성공했습니다", 1);
     }
 
     @GetMapping("/member")
-    public BaseResponse<Object> MemberInfo(@RequestParam String email,
-                                           @RequestHeader("Authorization") String requestAccessToken) {
-        MemberResponseDto memberResponseDto = memberService.getMemberInformation(email, requestAccessToken);
+    public BaseResponse<Object> MemberInfo(@RequestHeader("Authorization") String requestAccessToken) {
+        MemberResponseDto memberResponseDto = memberService.getMemberInformation(requestAccessToken);
         return BaseResponse.of(1, "회원정보를 조회합니다.", memberResponseDto);
     }
 
@@ -135,9 +138,8 @@ public class MemberController {
     }
 
     @PutMapping("/deleteMember")
-    public BaseResponse<Object> deleteMember(@RequestParam String email,
-                                             @RequestHeader("Authorization") String requestAccessToken) {
-        MemberDeleteDto memberDeleteDto = memberService.deleteMember(email, requestAccessToken);
+    public BaseResponse<Object> deleteMember(@RequestHeader("Authorization") String requestAccessToken) {
+        MemberDeleteDto memberDeleteDto = memberService.deleteMember(requestAccessToken);
         return BaseResponse.of(1, "아이디를 삭제합니다.", memberDeleteDto);
     }
 
@@ -159,6 +161,7 @@ public class MemberController {
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set(HttpHeaders.SET_COOKIE,  responseCookie.toString());
+
 
         return new ResponseEntity<>("로그아웃이 완료되었습니다.", httpHeaders, HttpStatus.OK);
     }
