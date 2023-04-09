@@ -18,4 +18,6 @@ public interface ReservationService {
     ReservationDetailResponseDTO reservationCheck(ReservationCheckRequestDTO requestDTO);
 
     String cancelReservation(String reservationCode);
+
+    String undoReservation(String reservationCode);
 }
