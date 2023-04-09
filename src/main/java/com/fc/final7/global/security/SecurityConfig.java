@@ -6,6 +6,7 @@ import com.fc.final7.domain.jwt.filter.JwtFilter;
 import com.fc.final7.domain.jwt.handler.JwtAccessDeniedHandler;
 import com.fc.final7.domain.jwt.handler.JwtAuthenticationEntryPoint;
 import com.fc.final7.domain.member.oauth.service.CustomOauth2UserService;
+import com.fc.final7.global.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -32,6 +33,8 @@ public class SecurityConfig{
     private final CustomOauth2UserService customOauth2UserService;
     private final JwtProperties jwtProperties;
     private final JwtProvider jwtProvider;
+
+    private final RedisService redisService;
 //    private final Oauth2SuccessHandler oauth2SuccessHandler;
 
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -62,7 +65,7 @@ public class SecurityConfig{
 
                 .and()
                 .addFilterBefore(
-                        new JwtFilter(jwtProvider, jwtProperties),
+                        new JwtFilter(jwtProvider, jwtProperties, redisService),
                         UsernamePasswordAuthenticationFilter.class
                 )
                 .authorizeRequests().antMatchers(
