@@ -25,6 +25,7 @@ public class ReservationDetailResponseDTO {
     private String name;
     private String phone;
     private String email;
+    private Integer people;
     private String reservationCode;
 
     public ReservationDetailResponseDTO(Reservation reservation) {
@@ -36,6 +37,7 @@ public class ReservationDetailResponseDTO {
         name = reservation.getName();
         phone = reservation.getPhone();
         email = reservation.getEmail();
+        people = reservation.getPeople();
         reservationCode = reservation.getReservationCode();
     }
 }
