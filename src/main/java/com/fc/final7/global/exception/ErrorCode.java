@@ -17,6 +17,8 @@ public enum ErrorCode{
     NULL_OR_TYPE_MISS_MATCH(400, "NULL_OR_TYPE_MISS_MATCH", "파라미터가 null 이거나 타입이 맞지 않습니다."),
     NULL_ACCESS_REFRESH_TOKEN(401, "Unauthorized", "로그아웃 되었습니다"),
     NULL_ACCESS_NOT_LOGIN(401, "Unauthorized", "로그인 후에 사용가능합니다."),
+
+    FORBIDDEN(403, "forbidden", "접근이 금지되었습니다."),
     NULL_POINTER_EXCEPTION(500, "NULL_POINTER", "NULL_POINTER_EXCEPTION 오류"),
 
     PRODUCT_NOT_FOUND(404, "PRODUCT-001", "존재하지 않는 상품입니다."),

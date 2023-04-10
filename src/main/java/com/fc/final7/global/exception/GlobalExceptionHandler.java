@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -119,5 +120,13 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.RESERVATION_NOT_FOUND);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ForbiddenToken.class)
+    protected ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenToken e) {
+        log.error("ForbiddenToken", e);
+        final ErrorResponse response = ErrorResponse.of(ErrorCode.FORBIDDEN);
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
 
 }
