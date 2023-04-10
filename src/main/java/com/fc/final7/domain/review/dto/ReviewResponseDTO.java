@@ -45,6 +45,11 @@ public class ReviewResponseDTO {
                 .reviewTitle(review.getTitle())
                 .reviewThumbnail(review.getThumbnail())
                 .reviewGrade(review.getGrade())
+                .tagList(review.getProduct().getCategories().stream()
+                        .map(category -> Optional.ofNullable(category.getSubdivision())
+                                .orElseGet(() -> category.getMiddleCategory()))
+                        .collect(Collectors.toList())
+                )
                 .build();
     }
 
