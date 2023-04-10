@@ -2,6 +2,7 @@ package com.fc.final7.domain.review.service.impl;
 
 import com.fc.final7.domain.product.entity.Category;
 import com.fc.final7.domain.product.repository.datajpa.CategoryRepository;
+import com.fc.final7.domain.product.repository.datajpa.ProductRepository;
 import com.fc.final7.domain.review.dto.*;
 import com.fc.final7.domain.review.entity.Posting;
 import com.fc.final7.domain.review.entity.Review;
@@ -23,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -36,6 +36,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewContentRepository reviewContentRepository;
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     @Override
     @Transactional
@@ -52,8 +53,12 @@ public class ReviewServiceImpl implements ReviewService {
         createReviewText(text, reviewId.intValue());
 
         String thumbnail;
-        if (Collections.isEmpty(multipartFileList)) thumbnail = responseReview.getProduct().getThumbnail();
-        else thumbnail = createReviewImages(multipartFileList, reviewId.intValue());
+        if (Collections.isEmpty(multipartFileList)){
+            thumbnail = productRepository.findById((long) reviewRequestDTO.getProductId()).get().getThumbnail();
+        }
+        else {
+            thumbnail = createReviewImages(multipartFileList, reviewId.intValue());
+        }
 
         requestReview = ReviewRequestDTO.toUpdateEntity(reviewRequestDTO, reviewId, thumbnail);
         reviewRepository.save(requestReview);
