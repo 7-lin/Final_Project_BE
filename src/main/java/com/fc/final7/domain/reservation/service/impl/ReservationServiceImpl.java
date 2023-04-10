@@ -127,6 +127,9 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional(readOnly = true)
     @Override
     public List<ReservationResponseDTO> reservationInquiryByMember(String header) {
+        if(header == null) {
+            throw new UnusualAccessRouteException();
+        }
         String token = parsing(header);
         String email = jwtProvider.getClaimsFromToken(token).get("email", String.class);
         Member member = memberRepository.findByEmail(email).get();
