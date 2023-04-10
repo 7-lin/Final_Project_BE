@@ -25,7 +25,7 @@ public class ReviewController {
 
     @PostMapping("/reviews")
     public BaseResponse<Null> doCreateReview(@RequestPart(name = "json") ReviewRequestDTO reviewRequestDTO,
-                                             @RequestPart(name = "image")List<MultipartFile> multipartFileList,
+                                             @RequestPart(name = "image" , required = false)List<MultipartFile> multipartFileList,
                                              @RequestParam(name = "text")String text) throws IOException {
 
         return BaseResponse.of(0, reviewService.createReview(reviewRequestDTO, multipartFileList, text), null);
