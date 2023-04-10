@@ -176,7 +176,6 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationDetailResponseDTO reservationCheck(ReservationCheckRequestDTO requestDTO) {
         String reservationCode = requestDTO.getReservationCode();
-        System.out.println("reservationCode = " + reservationCode);
         String phone = requestDTO.getPhone();
         //존재하지 않는 예약 번호를 입력했을 경우
         Reservation reservation = reservationRepository
