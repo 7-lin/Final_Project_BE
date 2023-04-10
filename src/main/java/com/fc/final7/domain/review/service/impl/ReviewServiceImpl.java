@@ -13,6 +13,7 @@ import com.fc.final7.global.entity.ContentType;
 import com.fc.final7.global.exception.ReviewNotFoundException;
 import com.fc.final7.global.exception.ReviewPasswordMismatchException;
 import com.fc.final7.global.image.ImageHandler;
+import io.jsonwebtoken.lang.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -50,7 +52,7 @@ public class ReviewServiceImpl implements ReviewService {
         createReviewText(text, reviewId.intValue());
 
         String thumbnail;
-        if (Objects.isNull(multipartFileList)) thumbnail = responseReview.getProduct().getThumbnail();
+        if (Collections.isEmpty(multipartFileList)) thumbnail = responseReview.getProduct().getThumbnail();
         else thumbnail = createReviewImages(multipartFileList, reviewId.intValue());
 
         requestReview = ReviewRequestDTO.toUpdateEntity(reviewRequestDTO, reviewId, thumbnail);
