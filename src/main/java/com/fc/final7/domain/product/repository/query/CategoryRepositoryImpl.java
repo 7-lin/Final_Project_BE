@@ -67,7 +67,7 @@ public class CategoryRepositoryImpl implements CategoryQueryRepository {
             if (middleCategory != null) {
                 categoryBuilder.and(category.middleCategory.eq(middleCategory));
             }
-            builder.or(product.categories.any().in(JPAExpressions
+            builder.and(product.categories.any().in(JPAExpressions
                     .selectFrom(category)
                     .where(categoryBuilder)
             ));
