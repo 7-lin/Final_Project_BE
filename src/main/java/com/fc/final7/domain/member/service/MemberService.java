@@ -116,13 +116,13 @@ public class MemberService {
                 throw new PasswordNotMatchException();
             }
         } else if (updateDto.getPhone() != null && updateDto.getNewPassword() == null && updateDto.getValidNewPassword() == null) {
-            if (checkDuplicationPhoneUpdate(updateDto.getPhone())) {
+            if (checkDuplicationPhoneUpdate(updateDto)) {
                 throw new EXIST_MEMBER();
             }
             member.updatePhone(updateDto.getPhone());
         } else if (updateDto.getPhone() != null && updateDto.getNewPassword() != null && updateDto.getValidNewPassword() != null) {
             if (updateDto.getNewPassword().equals(updateDto.getValidNewPassword())) {
-                if (checkDuplicationPhoneUpdate(updateDto.getPhone())) {
+                if (checkDuplicationPhoneUpdate(updateDto)) {
                     throw new EXIST_MEMBER();
                 }
                 member.updatePassword(encoder.encode(updateDto.getNewPassword()));
@@ -219,8 +219,8 @@ public class MemberService {
         return memberRepository.existsByPhone(requestDto.getPhone());
     }
 
-    public boolean checkDuplicationPhoneUpdate(String phone) {
-        return memberRepository.existsByPhone(phone);
+    public boolean checkDuplicationPhoneUpdate(MemberUpdateDto updateDto) {
+       return memberRepository.existsByPhone(updateDto.getPhone());
     }
 
     public static final Pattern isEmail = Pattern.compile("^[a-zA-Z0-9+-\\_.]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$");

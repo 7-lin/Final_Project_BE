@@ -92,8 +92,8 @@ public class MemberController {
     }
 
     @PostMapping("/member/update/checkPhone")
-    public boolean checkDuplicationPhone(@RequestBody String phone){
-        return memberService.checkDuplicationPhoneUpdate(phone);
+    public boolean checkDuplicationPhone(@RequestBody MemberUpdateDto updateDto){
+        return memberService.checkDuplicationPhoneUpdate(updateDto);
     }
 
     @PostMapping("/login")
