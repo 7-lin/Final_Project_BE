@@ -48,7 +48,10 @@ public class ReviewServiceImpl implements ReviewService {
         imageHandler.createFolder("review", reviewId.intValue());
 
         createReviewText(text, reviewId.intValue());
-        String thumbnail = createReviewImages(multipartFileList, reviewId.intValue());
+
+        String thumbnail;
+        if (Objects.isNull(multipartFileList)) thumbnail = responseReview.getProduct().getThumbnail();
+        else thumbnail = createReviewImages(multipartFileList, reviewId.intValue());
 
         requestReview = ReviewRequestDTO.toUpdateEntity(reviewRequestDTO, reviewId, thumbnail);
         reviewRepository.save(requestReview);
