@@ -99,6 +99,10 @@ https://www.gotogether-s.com/
 <br>
   </div>
   
+# Architecture
+![image](https://user-images.githubusercontent.com/17640541/235441263-71b3df8f-a6ed-49d6-bca6-1fecdbbed3d9.png)
+
+  
 # 협업툴
 <div align="center">
 <img src="https://img.shields.io/badge/slack-4A154B?style=for-the-badge&logo=slack&logoColor=white">
